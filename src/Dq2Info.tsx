@@ -14,14 +14,14 @@ const Dq2Info: React.FC<Props> = (props) => {
         return null;
     }
 
-    const names = dq2.getPartyNames(info.ro_name);
+    const names = dq2.getPartyNames(info.roName);
 
     return (
         <div>
             <div className="frame">
                 <h2>ローレシアの王子</h2>
-                <OutputLabel label="なまえ" value={info.ro_name} />
-                <OutputLabel label="ＥＸ" value={info.ro_exp.toString()} />
+                <OutputLabel label="なまえ" value={info.roName} />
+                <OutputLabel label="ＥＸ" value={info.roExp.toString()} />
                 <OutputLabel label="Ｇ" value={info.gold.toString()} />
                 <br />
                 {
@@ -30,10 +30,10 @@ const Dq2Info: React.FC<Props> = (props) => {
                             key={`ro-${i}`}
                             label={i === 0 ? "どうぐ" : ""}
                             value={
-                                ((info.ro_item[i] & 0x40) !== 0 ? "Ｅ " : "　 ")
-                                + dq2pswd.items[info.ro_item[i] & 0x3f].name
+                                ((info.roItems[i] & 0x40) !== 0 ? "Ｅ " : "　 ")
+                                + dq2pswd.itemLabels[info.roItems[i] & 0x3f].name
                             }
-                            error={!!dq2pswd.items[info.ro_item[i] & 0x3f].illegal}
+                            error={!!dq2pswd.itemLabels[info.roItems[i] & 0x3f].illegal}
                         />
                     ))
                 }
@@ -57,10 +57,10 @@ const Dq2Info: React.FC<Props> = (props) => {
             </div>
             <div className="frame">
                 <h2>サマルトリアの王子</h2>
-                <OutputLabel label="なまえ" value={names.sa_name} />
-                {info.sa_flag &&
+                <OutputLabel label="なまえ" value={names.saName} />
+                {info.saFlag &&
                     <>
-                        <OutputLabel label="ＥＸ" value={info.sa_exp.toString()} />
+                        <OutputLabel label="ＥＸ" value={info.saExp.toString()} />
                         <br />
                         {
                             [...Array(8)].map((_, i) => (
@@ -68,10 +68,10 @@ const Dq2Info: React.FC<Props> = (props) => {
                                     key={`sa-${i}`}
                                     label={i === 0 ? "どうぐ" : ""}
                                     value={
-                                        ((info.sa_item[i] & 0x40) !== 0 ? "Ｅ " : "　 ")
-                                        + dq2pswd.items[info.sa_item[i] & 0x3f].name
+                                        ((info.saItems[i] & 0x40) !== 0 ? "Ｅ " : "　 ")
+                                        + dq2pswd.itemLabels[info.saItems[i] & 0x3f].name
                                     }
-                                    error={!!dq2pswd.items[info.sa_item[i] & 0x3f].illegal}
+                                    error={!!dq2pswd.itemLabels[info.saItems[i] & 0x3f].illegal}
                                 />
                             ))
                         }
@@ -81,10 +81,10 @@ const Dq2Info: React.FC<Props> = (props) => {
 
             <div className="frame">
                 <h2>ムーンブルクの王女</h2>
-                <OutputLabel label="なまえ" value={names.mu_name} />
-                {info.mu_flag &&
+                <OutputLabel label="なまえ" value={names.muName} />
+                {info.muFlag &&
                     <>
-                        <OutputLabel label="ＥＸ" value={info.mu_exp.toString()} />
+                        <OutputLabel label="ＥＸ" value={info.muExp.toString()} />
                         <br />
                         {
                             [...Array(8)].map((_, i) => (
@@ -92,10 +92,10 @@ const Dq2Info: React.FC<Props> = (props) => {
                                     key={`mu-${i}`}
                                     label={i === 0 ? "どうぐ" : ""}
                                     value={
-                                        ((info.mu_item[i] & 0x40) !== 0 ? "Ｅ " : "　 ")
-                                        + dq2pswd.items[info.mu_item[i] & 0x3f].name
+                                        ((info.muItems[i] & 0x40) !== 0 ? "Ｅ " : "　 ")
+                                        + dq2pswd.itemLabels[info.muItems[i] & 0x3f].name
                                     }
-                                    error={!!dq2pswd.items[info.mu_item[i] & 0x3f].illegal}
+                                    error={!!dq2pswd.itemLabels[info.muItems[i] & 0x3f].illegal}
                                 />
                             ))
                         }
@@ -104,20 +104,20 @@ const Dq2Info: React.FC<Props> = (props) => {
             </div>
             <div className="frame">
                 <h2>ストーリー</h2>
-                <OutputLabel label="洞窟の浅瀬で" value={dq2pswd.flagMoonLabels[info.flag_moon ? 1 : 0].name} />
-                <OutputLabel label="テパの村で" value={dq2pswd.flagGateLabels[info.flag_gate ? 1 : 0].name} />
-                <OutputLabel label="水のはごろもを" value={dq2pswd.flagPlumageLabels[info.flag_plumage ? 1 : 0].name} />
-                <OutputLabel label="ルプガナの街で" value={dq2pswd.statShipLabels[info.stat_ship].name} />
-                <OutputLabel label="仲間の王子を" value={dq2pswd.statPrinceLabels[info.stat_prince].name} />
+                <OutputLabel label="洞窟の浅瀬で" value={dq2pswd.flagMoonLabels[info.flagMoon ? 1 : 0].name} />
+                <OutputLabel label="テパの村で" value={dq2pswd.flagGateLabels[info.flagGate ? 1 : 0].name} />
+                <OutputLabel label="水のはごろもを" value={dq2pswd.flagPlumageLabels[info.flagPlumage ? 1 : 0].name} />
+                <OutputLabel label="ルプガナの街で" value={dq2pswd.statShipLabels[info.statShip].name} />
+                <OutputLabel label="仲間の王子を" value={dq2pswd.statPrinceLabels[info.statPrince].name} />
                 <OutputLabel label="復活の場所は" value={dq2pswd.towns[info.town].name} />
             </div>
             <div className="frame">
                 <h2>紋章</h2>
-                <OutputLabel label="太陽" value={info.crest_sun ? "未入手" : "入手済"} />
-                <OutputLabel label="星" value={info.crest_star ? "未入手" : "入手済"} />
-                <OutputLabel label="月" value={info.crest_moon ? "未入手" : "入手済"} />
-                <OutputLabel label="水" value={info.crest_water ? "未入手" : "入手済"} />
-                <OutputLabel label="命" value={info.crest_life ? "未入手" : "入手済"} />
+                <OutputLabel label="太陽" value={info.crestSun ? "未入手" : "入手済"} />
+                <OutputLabel label="星" value={info.crestStar ? "未入手" : "入手済"} />
+                <OutputLabel label="月" value={info.crestMoon ? "未入手" : "入手済"} />
+                <OutputLabel label="水" value={info.crestWater ? "未入手" : "入手済"} />
+                <OutputLabel label="命" value={info.crestLife ? "未入手" : "入手済"} />
             </div>
             <div className="frame">
                 <h2>そのほか</h2>

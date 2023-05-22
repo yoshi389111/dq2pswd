@@ -15,30 +15,13 @@ interface Props {
 
 const dq2 = new dq2pswd.Dq2Password();
 
-const cryptItems: ReadonlyArray<dq2pswd.LabelInfo> = [
-    { id: 0, name: "#0" },
-    { id: 1, name: "#1" },
-    { id: 2, name: "#2" },
-    { id: 3, name: "#3" },
-    { id: 4, name: "#4" },
-    { id: 5, name: "#5" },
-    { id: 6, name: "#6" },
-    { id: 7, name: "#7" },
-    { id: 8, name: "#8" },
-    { id: 9, name: "#9" },
-    { id: 10, name: "#10" },
-    { id: 11, name: "#11" },
-    { id: 12, name: "#12" },
-    { id: 13, name: "#13" },
-    { id: 14, name: "#14" },
-    { id: 15, name: "#15" },
-];
-
+// アイテムは 8 個固定
 type ItemList = [
     number, number, number, number,
     number, number, number, number,
 ];
 
+/** number[] を ItemList に変換 (空きは 0 を入れる) */
 const toItemList = (items: number[]): ItemList => {
     return [...Array(8)].map((_, i) => (i < items.length) ? items[i] : 0) as ItemList;
 }
@@ -49,18 +32,19 @@ export const partyLabels: ReadonlyArray<dq2pswd.LabelInfo> = [
 ];
 
 const Dq2Edit: React.FC<Props> = (props) => {
+    // モーダルダイアログの表示状態
     const [show, setShow] = useState<boolean>(false);
 
     const [roName, setRoName] = useState<string>('');
-    const [roItem, setRoItem] = useState<ItemList>([0, 0, 0, 0, 0, 0, 0, 0]);
+    const [roItems, setRoItems] = useState<ItemList>([0, 0, 0, 0, 0, 0, 0, 0]);
     const [roExp, setRoExp] = useState<number>(0);
 
     const [saFlag, setSaFlag] = useState<number>(0);
-    const [saItem, setSaItem] = useState<ItemList>([0, 0, 0, 0, 0, 0, 0, 0]);
+    const [saItems, setSaItems] = useState<ItemList>([0, 0, 0, 0, 0, 0, 0, 0]);
     const [saExp, setSaExp] = useState<number>(0);
 
     const [muFlag, setMuFlag] = useState<number>(0);
-    const [muItem, setMuItem] = useState<ItemList>([0, 0, 0, 0, 0, 0, 0, 0]);
+    const [muItems, setMuItems] = useState<ItemList>([0, 0, 0, 0, 0, 0, 0, 0]);
     const [muExp, setMuExp] = useState<number>(0);
 
     const [gold, setGold] = useState<number>(0);
@@ -88,32 +72,32 @@ const Dq2Edit: React.FC<Props> = (props) => {
         }
         const info = dq2.analyzePassword(props.password);
         if (info) {
-            setRoName(info.ro_name.replaceAll(/　+$/g, ''));
-            setRoItem(toItemList(info.ro_item));
-            setRoExp(info.ro_exp);
+            setRoName(info.roName.replaceAll(/　+$/g, ''));
+            setRoItems(toItemList(info.roItems));
+            setRoExp(info.roExp);
 
-            setSaFlag(info.sa_flag ? 1 : 0);
-            setSaItem(toItemList(info.sa_item));
-            setSaExp(info.sa_exp);
+            setSaFlag(info.saFlag ? 1 : 0);
+            setSaItems(toItemList(info.saItems));
+            setSaExp(info.saExp);
 
-            setMuFlag(info.mu_flag ? 1 : 0);
-            setMuItem(toItemList(info.mu_item));
-            setMuExp(info.mu_exp);
+            setMuFlag(info.muFlag ? 1 : 0);
+            setMuItems(toItemList(info.muItems));
+            setMuExp(info.muExp);
 
             setGold(info.gold);
             setTown(info.town);
 
-            setFlagMoon(info.flag_moon ? 1 : 0);
-            setFlagGate(info.flag_gate ? 1 : 0);
-            setFlagPlumage(info.flag_plumage ? 1 : 0);
-            setStatShip(info.stat_ship);
-            setStatPrince(info.stat_prince);
+            setFlagMoon(info.flagMoon ? 1 : 0);
+            setFlagGate(info.flagGate ? 1 : 0);
+            setFlagPlumage(info.flagPlumage ? 1 : 0);
+            setStatShip(info.statShip);
+            setStatPrince(info.statPrince);
 
-            setCrestLife(info.crest_life ? 1 : 0);
-            setCrestWater(info.crest_water ? 1 : 0);
-            setCrestMoon(info.crest_moon ? 1 : 0);
-            setCrestStar(info.crest_star ? 1 : 0);
-            setCrestSun(info.crest_sun ? 1 : 0);
+            setCrestLife(info.crestLife ? 1 : 0);
+            setCrestWater(info.crestWater ? 1 : 0);
+            setCrestMoon(info.crestMoon ? 1 : 0);
+            setCrestStar(info.crestStar ? 1 : 0);
+            setCrestSun(info.crestSun ? 1 : 0);
 
             setCrypt(info.cryptKey);
             setCrc(info.checkCode);
@@ -124,32 +108,32 @@ const Dq2Edit: React.FC<Props> = (props) => {
     const createPassword = () => {
         const info: dq2pswd.Dq2PasswordInfo = {
 
-            ro_name: roName,
-            ro_item: [...roItem],
-            ro_exp: roExp,
+            roName: roName,
+            roItems: [...roItems],
+            roExp: roExp,
 
-            sa_flag: saFlag !== 0,
-            sa_item: [...saItem],
-            sa_exp: saExp,
+            saFlag: saFlag !== 0,
+            saItems: [...saItems],
+            saExp: saExp,
 
-            mu_flag: muFlag !== 0,
-            mu_item: [...muItem],
-            mu_exp: muExp,
+            muFlag: muFlag !== 0,
+            muItems: [...muItems],
+            muExp: muExp,
 
             gold,
             town,
 
-            flag_moon: flagMoon !== 0,
-            flag_gate: flagGate !== 0,
-            flag_plumage: flagPlumage !== 0,
-            stat_ship: statShip,
-            stat_prince: statPrince,
+            flagMoon: flagMoon !== 0,
+            flagGate: flagGate !== 0,
+            flagPlumage: flagPlumage !== 0,
+            statShip: statShip,
+            statPrince: statPrince,
 
-            crest_life: crestLife !== 0,
-            crest_water: crestWater !== 0,
-            crest_moon: crestMoon !== 0,
-            crest_star: crestStar !== 0,
-            crest_sun: crestSun !== 0,
+            crestLife: crestLife !== 0,
+            crestWater: crestWater !== 0,
+            crestMoon: crestMoon !== 0,
+            crestStar: crestStar !== 0,
+            crestSun: crestSun !== 0,
 
             cryptKey: crypt,
             checkCode: 0, // dummy
@@ -166,7 +150,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
             return null;
         }
 
-        // 表示用編集(全角スペースで幅調整している。注意)
+        // 表示用編集
         const passwordInDialogue = (
             <span>
                 {
@@ -179,17 +163,17 @@ const Dq2Edit: React.FC<Props> = (props) => {
             </span>
         );
 
-        // 王様のセリフ
+        // 王様のセリフ(全角スペースで幅調整している。注意)
         const dialogue = info.valid ? (
             <div>
                 ＊「そなたに　ふっかつのじゅもんを<br />
-                おしえよう！　　　　　　　　　<br />
+                おしえよう！　　　　　　　　　　<br />
                 <br />
                 <div className="passwd-block">
                     {passwordInDialogue}
                 </div>
                 <br />
-                ＊「これを　かきとめておくのだぞ。 <br />
+                ＊「これを　かきとめておくのだぞ。<br />
             </div>
         ) : (
             <div>
@@ -204,7 +188,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
         return (
             <div id="overlay" onClick={() => setShow(false)}>
                 <div className="frame" onClick={(e) => e.stopPropagation()}>
-                    <h2>勇者「{info.ro_name}」</h2>
+                    <h2>勇者「{info.roName}」</h2>
                     {dialogue}
                     <br />
                     <div className="button-area">
@@ -258,13 +242,13 @@ const Dq2Edit: React.FC<Props> = (props) => {
                         <EquipmentItem
                             key={`ro_item_${i}`}
                             mask={1}
-                            value={roItem[i]}
+                            value={roItems[i]}
                             setValue={(value) => {
-                                const items: ItemList = [...roItem];
+                                const items: ItemList = [...roItems];
                                 items[i] = value;
-                                setRoItem(items);
+                                setRoItems(items);
                             }}
-                            items={dq2pswd.items}
+                            items={dq2pswd.itemLabels}
                         />
                     ))
                 }
@@ -273,7 +257,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
                 <h2>サマルトリアの王子</h2>
                 <SelectItem label="" value={saFlag} setValue={setSaFlag} items={partyLabels} />
                 <br />
-                <OutputLabel label="なまえ" value={names.sa_name} />
+                <OutputLabel label="なまえ" value={names.saName} />
                 {saFlag !== 0 &&
                     <>
                         <div title="0～1,000,000 の範囲で入力してください">
@@ -286,13 +270,13 @@ const Dq2Edit: React.FC<Props> = (props) => {
                                 <EquipmentItem
                                     key={`sa_item_${i}`}
                                     mask={2}
-                                    value={saItem[i]}
+                                    value={saItems[i]}
                                     setValue={(value) => {
-                                        const items: ItemList = [...saItem];
+                                        const items: ItemList = [...saItems];
                                         items[i] = value;
-                                        setSaItem(items);
+                                        setSaItems(items);
                                     }}
-                                    items={dq2pswd.items}
+                                    items={dq2pswd.itemLabels}
                                 />
                             ))
                         }
@@ -301,13 +285,13 @@ const Dq2Edit: React.FC<Props> = (props) => {
             </div>
             <div className="frame">
                 <h2>ムーンブルクの王女</h2>
-                {saFlag !== 0 &&
-                    <>
-                        <SelectItem label="" value={muFlag} setValue={setMuFlag} items={partyLabels} />
-                        <br />
-                    </>
-                }
-                <OutputLabel label="なまえ" value={names.mu_name} />
+                {saFlag !== 0 ? (
+                    <SelectItem label="" value={muFlag} setValue={setMuFlag} items={partyLabels} />
+                ) : (
+                    <OutputLabel label="" value="まだ仲間になっていない" />
+                )}
+                <br />
+                <OutputLabel label="なまえ" value={names.muName} />
                 {saFlag !== 0 && muFlag !== 0 &&
                     <>
                         <div title="0～1,000,000 の範囲で入力してください">
@@ -320,13 +304,13 @@ const Dq2Edit: React.FC<Props> = (props) => {
                                 <EquipmentItem
                                     key={`mu_item_${i}`}
                                     mask={4}
-                                    value={muItem[i]}
+                                    value={muItems[i]}
                                     setValue={(value) => {
-                                        const items: ItemList = [...muItem];
+                                        const items: ItemList = [...muItems];
                                         items[i] = value;
-                                        setMuItem(items);
+                                        setMuItems(items);
                                     }}
-                                    items={dq2pswd.items}
+                                    items={dq2pswd.itemLabels}
                                 />
                             ))
                         }
@@ -352,7 +336,9 @@ const Dq2Edit: React.FC<Props> = (props) => {
             </div>
             <div className="frame">
                 <h2>そのほか</h2>
-                <SelectItem label="パターン" value={crypt} setValue={setCrypt} items={cryptItems} />
+                <div title="0～15 の範囲で入力してください">
+                    <InputNumber label="パターン" value={crypt} setValue={setCrypt} max={15} />
+                </div>
                 <OutputLabel
                     label="チェックコード"
                     value={utils.toHex2(crc)}
@@ -361,7 +347,10 @@ const Dq2Edit: React.FC<Props> = (props) => {
             </div>
             <div className="footer">
                 <div className="button-area">
-                    <span className="button" onClick={props.moveAnalize}>呪文を入力</span>
+                    <span className="button" onClick={() => {
+                        props.setPassword(createPassword());
+                        props.moveAnalize();
+                    }}>呪文を入力</span>
                     <span className="button" onClick={() => {
                         props.setPassword(createPassword());
                         setShow(true);

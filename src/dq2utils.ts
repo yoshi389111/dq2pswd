@@ -10,7 +10,7 @@ export const clipboardCopy = async (text: string): Promise<void> => {
 export const doTweet = (info: dq2pswd.Dq2PasswordInfo, password: string): void => {
     if (info.valid) {
         const dq2 = new dq2pswd.Dq2Password()
-        const message = "勇者「" + info.ro_name + "」\n" +
+        const message = "勇者「" + info.roName + "」\n" +
             dq2.editPassword(password) + "\n" +
             "#復活の呪文 #dq2pswd\n";
         const url = "https://twitter.com/share?text=" + encodeURIComponent(message);

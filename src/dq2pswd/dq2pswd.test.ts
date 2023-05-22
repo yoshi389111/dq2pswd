@@ -89,32 +89,32 @@ it("dq2pswd.createPassword", () => {
     const dq2 = new dq2pswd.Dq2Password();
     var info: dq2pswd.Dq2PasswordInfo = {
 
-        ro_name: "あいうえ",
-        ro_item: [1],
-        ro_exp: 123,
+        roName: "あいうえ",
+        roItems: [1],
+        roExp: 123,
 
-        sa_flag: true,
-        sa_item: [2],
-        sa_exp: 12,
+        saFlag: true,
+        saItems: [2],
+        saExp: 12,
 
-        mu_flag: true,
-        mu_item: [3],
-        mu_exp: 3,
+        muFlag: true,
+        muItems: [3],
+        muExp: 3,
 
         gold: 456,
         town: 1,
 
-        flag_moon: false,
-        flag_gate: false,
-        flag_plumage: false,
-        stat_ship: 0,
-        stat_prince: 0,
+        flagMoon: false,
+        flagGate: false,
+        flagPlumage: false,
+        statShip: 0,
+        statPrince: 0,
 
-        crest_life: false,
-        crest_water: false,
-        crest_moon: false,
-        crest_star: false,
-        crest_sun: false,
+        crestLife: false,
+        crestWater: false,
+        crestMoon: false,
+        crestStar: false,
+        crestSun: false,
 
         cryptKey: 1,
         checkCode: 0,
@@ -127,32 +127,32 @@ it("dq2pswd.createPassword and dq2pswd.analyzePassword", () => {
     const dq2 = new dq2pswd.Dq2Password();
     var info: dq2pswd.Dq2PasswordInfo = {
 
-        ro_name: "あ　　　",
-        ro_item: [],
-        ro_exp: 0,
+        roName: "あ　　　",
+        roItems: [],
+        roExp: 0,
 
-        sa_flag: false,
-        sa_item: [],
-        sa_exp: 0,
+        saFlag: false,
+        saItems: [],
+        saExp: 0,
 
-        mu_flag: false,
-        mu_item: [],
-        mu_exp: 0,
+        muFlag: false,
+        muItems: [],
+        muExp: 0,
 
         gold: 0,
         town: 0,
 
-        flag_moon: false,
-        flag_gate: false,
-        flag_plumage: false,
-        stat_ship: 0,
-        stat_prince: 0,
+        flagMoon: false,
+        flagGate: false,
+        flagPlumage: false,
+        statShip: 0,
+        statPrince: 0,
 
-        crest_life: false,
-        crest_water: false,
-        crest_moon: false,
-        crest_star: false,
-        crest_sun: false,
+        crestLife: false,
+        crestWater: false,
+        crestMoon: false,
+        crestStar: false,
+        crestSun: false,
 
         cryptKey: 0,
         checkCode: 0,
@@ -162,28 +162,28 @@ it("dq2pswd.createPassword and dq2pswd.analyzePassword", () => {
     expect(password).toEqual("がぺぎごよけすすたてにやられがげじぞ");
     const info2 = dq2.analyzePassword(password);
     expect(info2).not.toBeNull();
-    expect(info2!.ro_name).toEqual(info.ro_name);
+    expect(info2!.roName).toEqual(info.roName);
     expect(info2!.gold).toEqual(info.gold);
     expect(info2!.town).toEqual(info.town);
-    expect(info2!.flag_moon).toEqual(info.flag_moon);
-    expect(info2!.flag_gate).toEqual(info.flag_gate);
-    expect(info2!.flag_plumage).toEqual(info.flag_plumage);
-    expect(info2!.stat_ship).toEqual(info.stat_ship);
-    expect(info2!.stat_prince).toEqual(info.stat_prince);
-    expect(info2!.crest_life).toEqual(info.crest_life);
-    expect(info2!.crest_water).toEqual(info.crest_water);
-    expect(info2!.crest_moon).toEqual(info.crest_moon);
-    expect(info2!.crest_star).toEqual(info.crest_star);
-    expect(info2!.crest_sun).toEqual(info.crest_sun);
+    expect(info2!.flagMoon).toEqual(info.flagMoon);
+    expect(info2!.flagGate).toEqual(info.flagGate);
+    expect(info2!.flagPlumage).toEqual(info.flagPlumage);
+    expect(info2!.statShip).toEqual(info.statShip);
+    expect(info2!.statPrince).toEqual(info.statPrince);
+    expect(info2!.crestLife).toEqual(info.crestLife);
+    expect(info2!.crestWater).toEqual(info.crestWater);
+    expect(info2!.crestMoon).toEqual(info.crestMoon);
+    expect(info2!.crestStar).toEqual(info.crestStar);
+    expect(info2!.crestSun).toEqual(info.crestSun);
 
-    expect(info2!.ro_exp).toEqual(info.ro_exp);
-    expect(info2!.ro_item).toEqual(info.ro_item);
-    expect(info2!.sa_flag).toEqual(info.sa_flag);
-    expect(info2!.sa_exp).toEqual(info.sa_exp);
-    expect(info2!.sa_item).toEqual(info.sa_item);
-    expect(info2!.mu_flag).toEqual(info.mu_flag);
-    expect(info2!.mu_exp).toEqual(info.mu_exp);
-    expect(info2!.mu_item).toEqual(info.mu_item);
+    expect(info2!.roExp).toEqual(info.roExp);
+    expect(info2!.roItems).toEqual(info.roItems);
+    expect(info2!.saFlag).toEqual(info.saFlag);
+    expect(info2!.saExp).toEqual(info.saExp);
+    expect(info2!.saItems).toEqual(info.saItems);
+    expect(info2!.muFlag).toEqual(info.muFlag);
+    expect(info2!.muExp).toEqual(info.muExp);
+    expect(info2!.muItems).toEqual(info.muItems);
 
     expect(info2!.cryptKey).toEqual(info.cryptKey);
     expect(info2!.checkCode).toEqual(info.checkCode);
@@ -196,29 +196,29 @@ it("dq2pswd.analyzePassword", () => {
     const info = dq2.analyzePassword("ぺにはまぜゆされせつにさそはこそてきさひまじさそてきその");
 
     expect(info).not.toBeNull();
-    expect(info!.ro_name).toEqual("あいうえ");
+    expect(info!.roName).toEqual("あいうえ");
     expect(info!.gold).toEqual(456);
     expect(info!.town).toEqual(1);
-    expect(info!.flag_moon).toEqual(false);
-    expect(info!.flag_gate).toEqual(false);
-    expect(info!.flag_plumage).toEqual(false);
-    expect(info!.stat_ship).toEqual(0);
-    expect(info!.stat_prince).toEqual(0);
+    expect(info!.flagMoon).toEqual(false);
+    expect(info!.flagGate).toEqual(false);
+    expect(info!.flagPlumage).toEqual(false);
+    expect(info!.statShip).toEqual(0);
+    expect(info!.statPrince).toEqual(0);
 
-    expect(info!.crest_life).toEqual(false);
-    expect(info!.crest_water).toEqual(false);
-    expect(info!.crest_moon).toEqual(false);
-    expect(info!.crest_star).toEqual(false);
-    expect(info!.crest_sun).toEqual(false);
+    expect(info!.crestLife).toEqual(false);
+    expect(info!.crestWater).toEqual(false);
+    expect(info!.crestMoon).toEqual(false);
+    expect(info!.crestStar).toEqual(false);
+    expect(info!.crestSun).toEqual(false);
 
-    expect(info!.ro_exp).toEqual(123);
-    expect(info!.ro_item).toEqual([1]);
-    expect(info!.sa_flag).toEqual(true);
-    expect(info!.sa_exp).toEqual(12);
-    expect(info!.sa_item).toEqual([2]);
-    expect(info!.mu_flag).toEqual(true);
-    expect(info!.mu_exp).toEqual(3);
-    expect(info!.mu_item).toEqual([3]);
+    expect(info!.roExp).toEqual(123);
+    expect(info!.roItems).toEqual([1]);
+    expect(info!.saFlag).toEqual(true);
+    expect(info!.saExp).toEqual(12);
+    expect(info!.saItems).toEqual([2]);
+    expect(info!.muFlag).toEqual(true);
+    expect(info!.muExp).toEqual(3);
+    expect(info!.muItems).toEqual([3]);
 
     expect(info!.cryptKey).toEqual(1);
     expect(info!.checkCode).toEqual(0);
