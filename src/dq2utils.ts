@@ -1,24 +1,13 @@
 import * as dq2pswd from './dq2pswd/dq2pswd';
 
 /** 任意の文字列をクリップボードにコピー */
-export const clipboardCopy = (text: string) => {
-    // create textarea
-    const copyFrom = document.createElement("textarea");
-    // append to body
-    const bodyElm = document.getElementsByTagName("body")[0];
-    bodyElm.appendChild(copyFrom);
-    // copy 
-    copyFrom.textContent = text;
-    copyFrom.select();
-    const result = document.execCommand('copy');
-    // remove textarea
-    bodyElm.removeChild(copyFrom);
+export const clipboardCopy = async (text: string): Promise<void> => {
+    await navigator.clipboard.writeText(text);
     alert('コピーしました');
-    return result;
 }
 
 /** 復活の呪文をツイートする */
-export const doTweet = (info: dq2pswd.Dq2PasswordInfo, password: string) => {
+export const doTweet = (info: dq2pswd.Dq2PasswordInfo, password: string): void => {
     if (info.valid) {
         const message = "勇者「" + info.ro_name + "」\n" +
             password.substring(0, 5) + "　" + password.substring(5, 12) + "\n" +
