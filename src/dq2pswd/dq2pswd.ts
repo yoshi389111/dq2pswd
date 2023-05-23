@@ -292,629 +292,625 @@ export interface Dq2PasswordInfo {
     valid: boolean;
 }
 
-/** 復活の呪文 */
-export class Dq2Password {
+/**
+ * 名前を文字列に変換.
+ * @param nameNums 数字配列の名前
+ * @return 名前
+ */
+export const toStringName = (nameNums: number[]): string => {
+    return nameNums
+        .filter(num => 0 <= num && num < NAME_ALPHABET.length)
+        .map(num => NAME_ALPHABET.charAt(num))
+        .join('');
+}
 
-    /**
-     * 名前を文字列に変換.
-     * @param nameNums 数字配列の名前
-     * @return 名前
-     */
-    toStringName(nameNums: number[]): string {
-        return nameNums
-            .filter(num => 0 <= num && num < NAME_ALPHABET.length)
-            .map(num => NAME_ALPHABET.charAt(num))
-            .join('');
+/**
+ * 名前を数値配列に変換.
+ * @param name 名前
+ * @return 数値配列
+ */
+export const toNumberName = (name: string): number[] => {
+    const nameNums = name.split('')
+        .map(ch => HANKAKU_TO_ZENKAKU[ch] || ch)
+        .map(ch => NAME_ALIAS[ch] || ch)
+        .flatMap(ch => ch.split(''))
+        .map(ch => NAME_ALPHABET.indexOf(ch))
+        .filter(num => num !== -1);
+
+    while (nameNums.length < NAME_LENGTH) {
+        nameNums.push(62); // スペース
     }
 
-    /**
-     * 名前を数値配列に変換.
-     * @param name 名前
-     * @return 数値配列
-     */
-    toNumberName(name: string): number[] {
-        const nameNums = name.split('')
-            .map(ch => HANKAKU_TO_ZENKAKU[ch] || ch)
-            .map(ch => NAME_ALIAS[ch] || ch)
-            .flatMap(ch => ch.split(''))
-            .map(ch => NAME_ALPHABET.indexOf(ch))
-            .filter(num => num !== -1);
+    return nameNums.length === NAME_LENGTH
+        ? nameNums
+        : nameNums.slice(0, NAME_LENGTH);
+}
 
-        while (nameNums.length < NAME_LENGTH) {
-            nameNums.push(62); // スペース
-        }
+/**
+ * 数値配列を復活の呪文に変換.
+ * @param passwordNums 復活の呪文(数値配列)
+ * @return 復活の呪文
+ */
+export const toStringPassword = (passwordNums: number[]): string => {
+    return passwordNums
+        .filter(num => 0 <= num && num < JUMON_ALPHABET.length)
+        .map(num => JUMON_ALPHABET.charAt(num))
+        .join('');
+}
 
-        return nameNums.length === NAME_LENGTH
-            ? nameNums
-            : nameNums.slice(0, NAME_LENGTH);
-    }
+/**
+ * 復活の呪文を数値配列に変換.
+ * @param password 復活の呪文
+ * @return 数値配列
+ */
+export const toNumberPassword = (password: string): number[] => {
+    return password.split('')
+        .map(ch => JUMON_ALPHABET.indexOf(ch))
+        .filter(num => num !== -1);
+}
 
-    /**
-     * 数値配列を復活の呪文に変換.
-     * @param passwordNums 復活の呪文(数値配列)
-     * @return 復活の呪文
-     */
-    toStringPassword(passwordNums: number[]): string {
-        return passwordNums
-            .filter(num => 0 <= num && num < JUMON_ALPHABET.length)
-            .map(num => JUMON_ALPHABET.charAt(num))
-            .join('');
-    }
+/**
+ * 呪文を正規化する.
+ * @param password 復活の呪文
+ * @return 正規化した復活の呪文
+ */
+export const toNormalizePassword = (password: string): string => {
+    return password.split('')
+        .map(ch => HANKAKU_TO_ZENKAKU[ch] || ch)
+        .map(ch => JUMON_ALIAS[ch] || ch)
+        .filter(ch => ch === "？" || ch === '＊' || JUMON_ALPHABET.includes(ch))
+        .join('');
+}
 
-    /**
-     * 復活の呪文を数値配列に変換.
-     * @param password 復活の呪文
-     * @return 数値配列
-     */
-    toNumberPassword(password: string): number[] {
-        return password.split('')
-            .map(ch => JUMON_ALPHABET.indexOf(ch))
-            .filter(num => num !== -1);
-    }
+/**
+ * 呪文に使えない文字を返す
+ * @param password 復活の呪文
+ * @return 呪文に使えない文字
+ */
+export const invalidCharsInPassword = (password: string): string => {
+    const invalidChars = password.replaceAll(/\s/g, '').split('')
+        .map(ch => HANKAKU_TO_ZENKAKU[ch] || ch)
+        .map(ch => JUMON_ALIAS[ch] || ch)
+        .filter(ch => ch !== "？" && ch !== '＊' && !JUMON_ALPHABET.includes(ch));
+    return Array.from(new Set(invalidChars)).join('');
+}
 
-    /**
-     * 呪文を正規化する.
-     * @param password 復活の呪文
-     * @return 正規化した復活の呪文
-     */
-    toNormalizePassword(password: string): string {
-        return password.split('')
-            .map(ch => HANKAKU_TO_ZENKAKU[ch] || ch)
-            .map(ch => JUMON_ALIAS[ch] || ch)
-            .filter(ch => ch === "？" || ch === '＊' || JUMON_ALPHABET.includes(ch))
-            .join('');
-    }
-
-    /**
-     * 呪文に使えない文字を返す
-     * @param password 復活の呪文
-     * @return 呪文に使えない文字
-     */
-    invalidCharsInPassword(password: string): string {
-        const invalidChars = password.replaceAll(/\s/g, '').split('')
-            .map(ch => HANKAKU_TO_ZENKAKU[ch] || ch)
-            .map(ch => JUMON_ALIAS[ch] || ch)
-            .filter(ch => ch !== "？" && ch !== '＊' && !JUMON_ALPHABET.includes(ch));
-        return Array.from(new Set(invalidChars)).join('');
-    }
-
-    /** CRC を計算する */
-    private calcuteCrc(code: BitArray): number {
-        let crc = code.len * 0x0101;
-        for (let i = code.len - 1; i >= 0; i--) {
-            let octed = code.code[i];
-            for (let j = 0; j < 8; j++) {
-                const carryBit = (((crc >> 8) ^ octed) & 0x80) !== 0;
-                crc = (crc << 1) & 0xffff;
-                octed = (octed << 1) & 0xff;
-                if (carryBit) {
-                    crc ^= 0x1021;
-                }
+/** CRC を計算する */
+const calcuteCrc = (code: BitArray): number => {
+    let crc = code.len * 0x0101;
+    for (let i = code.len - 1; i >= 0; i--) {
+        let octed = code.code[i];
+        for (let j = 0; j < 8; j++) {
+            const carryBit = (((crc >> 8) ^ octed) & 0x80) !== 0;
+            crc = (crc << 1) & 0xffff;
+            octed = (octed << 1) & 0xff;
+            if (carryBit) {
+                crc ^= 0x1021;
             }
         }
-        return crc & 0x07ff;
+    }
+    return crc & 0x07ff;
+}
+
+/**
+ * DQ2 復活の呪文作成.
+ * @param info 復活の呪文の素
+ * @return 復活の呪文
+ */
+export const createPassword = (info: Dq2PasswordInfo): string => {
+
+    const roName = toNumberName(info.roName);
+    const bytes = new BitArray();
+
+    // 復活の場所 (CRC は後で入れる)
+    bytes.appendBits(info.town & 0x07, 8);
+
+    // ローレシアの王子の名前と所持金
+    bytes.appendBits((
+        ((roName[2] & 0x3f) << 2) |
+        ((roName[1] & 0x30) >> 4)
+    ), 8);
+    bytes.appendBits((info.gold >> 8) & 0xff, 8);
+    bytes.appendBits((
+        ((roName[1] & 0x06) << 5) |
+        (roName[0] & 0x3f)
+    ), 8);
+    bytes.appendBits(info.gold & 0xff, 8);
+    bytes.appendBits((
+        ((roName[1] & 0x01) << 7) |
+        ((roName[3] & 0x3f) << 1) |
+        ((roName[1] & 0x08) >> 3)
+    ), 8);
+    // 暗号化キーと各種フラグ
+    bytes.appendBits((
+        ((info.cryptKey) << 7) |
+        ((info.flagMoon ? 1 : 0) << 6) |
+        ((info.flagGate ? 1 : 0) << 5) |
+        ((info.flagPlumage ? 1 : 0) << 4) |
+        ((info.statShip & 0x03) << 2) |
+        (info.statPrince & 0x03)
+    ), 8);
+    // 暗号化キーと紋章
+    bytes.appendBits((
+        ((info.cryptKey & 0x0e) << 4) |
+        ((info.crestLife) ? 0x10 : 0) |
+        ((info.crestWater) ? 0x08 : 0) |
+        ((info.crestMoon) ? 0x04 : 0) |
+        ((info.crestStar) ? 0x02 : 0) |
+        ((info.crestSun) ? 0x01 : 0)
+    ), 8);
+    // CRC 他(後で入れる)
+    bytes.appendBits(0, 8);
+
+    // ローレシアの王子の経験値
+    bytes.appendBits(info.roExp, 16);
+    bytes.appendBits(info.roExp >> 16, 4);
+
+    // ローレシアの王子のアイテム
+    const roItems = [...info.roItems];
+    while (roItems[roItems.length - 1] === 0) {
+        roItems.pop();
+    }
+    bytes.appendBits(roItems.length, 4);
+    for (const item of roItems) {
+        bytes.appendBits(item, 7);
     }
 
-    /**
-     * DQ2 復活の呪文作成.
-     * @param info 復活の呪文の素
-     * @return 復活の呪文
-     */
-    createPassword(info: Dq2PasswordInfo): string {
+    // サマルトリアの王子が仲間になっているか？
+    bytes.appendBits(info.saFlag ? 1 : 0, 1);
+    if (info.saFlag) {
 
-        const roName = this.toNumberName(info.roName);
-        const bytes = new BitArray();
+        // サマルトリアの王子の経験値
+        bytes.appendBits(info.saExp, 16);
+        bytes.appendBits(info.saExp >> 16, 4);
 
-        // 復活の場所 (CRC は後で入れる)
-        bytes.appendBits(info.town & 0x07, 8);
-
-        // ローレシアの王子の名前と所持金
-        bytes.appendBits((
-            ((roName[2] & 0x3f) << 2) |
-            ((roName[1] & 0x30) >> 4)
-        ), 8);
-        bytes.appendBits((info.gold >> 8) & 0xff, 8);
-        bytes.appendBits((
-            ((roName[1] & 0x06) << 5) |
-            (roName[0] & 0x3f)
-        ), 8);
-        bytes.appendBits(info.gold & 0xff, 8);
-        bytes.appendBits((
-            ((roName[1] & 0x01) << 7) |
-            ((roName[3] & 0x3f) << 1) |
-            ((roName[1] & 0x08) >> 3)
-        ), 8);
-        // 暗号化キーと各種フラグ
-        bytes.appendBits((
-            ((info.cryptKey) << 7) |
-            ((info.flagMoon ? 1 : 0) << 6) |
-            ((info.flagGate ? 1 : 0) << 5) |
-            ((info.flagPlumage ? 1 : 0) << 4) |
-            ((info.statShip & 0x03) << 2) |
-            (info.statPrince & 0x03)
-        ), 8);
-        // 暗号化キーと紋章
-        bytes.appendBits((
-            ((info.cryptKey & 0x0e) << 4) |
-            ((info.crestLife) ? 0x10 : 0) |
-            ((info.crestWater) ? 0x08 : 0) |
-            ((info.crestMoon) ? 0x04 : 0) |
-            ((info.crestStar) ? 0x02 : 0) |
-            ((info.crestSun) ? 0x01 : 0)
-        ), 8);
-        // CRC 他(後で入れる)
-        bytes.appendBits(0, 8);
-
-        // ローレシアの王子の経験値
-        bytes.appendBits(info.roExp, 16);
-        bytes.appendBits(info.roExp >> 16, 4);
-
-        // ローレシアの王子のアイテム
-        const roItems = [...info.roItems];
-        while (roItems[roItems.length-1] === 0) {
-            roItems.pop();
+        // サマルトリアの王子のアイテム
+        const saItems = [...info.saItems];
+        while (saItems[saItems.length - 1] === 0) {
+            saItems.pop();
         }
-        bytes.appendBits(roItems.length, 4);
-        for (const item of roItems) {
+        bytes.appendBits(saItems.length, 4);
+        for (const item of saItems) {
             bytes.appendBits(item, 7);
         }
 
-        // サマルトリアの王子が仲間になっているか？
-        bytes.appendBits(info.saFlag ? 1 : 0, 1);
-        if (info.saFlag) {
+        // ムーンブルクの王女が仲間になっているか？
+        bytes.appendBits(info.muFlag ? 1 : 0, 1);
+        if (info.muFlag) {
+            // ムーンブルクの王女の経験値
+            bytes.appendBits(info.muExp, 16);
+            bytes.appendBits(info.muExp >> 16, 4);
 
-            // サマルトリアの王子の経験値
-            bytes.appendBits(info.saExp, 16);
-            bytes.appendBits(info.saExp >> 16, 4);
-
-            // サマルトリアの王子のアイテム
-            const saItems = [...info.saItems];
-            while (saItems[saItems.length-1] === 0) {
-                saItems.pop();
+            // ムーンブルクの王女のアイテム
+            const muItems = [...info.muItems];
+            while (muItems[muItems.length - 1] === 0) {
+                muItems.pop();
             }
-                bytes.appendBits(saItems.length, 4);
-            for (const item of saItems) {
+            bytes.appendBits(muItems.length, 4);
+            for (const item of muItems) {
                 bytes.appendBits(item, 7);
             }
-
-            // ムーンブルクの王女が仲間になっているか？
-            bytes.appendBits(info.muFlag ? 1 : 0, 1);
-            if (info.muFlag) {
-                // ムーンブルクの王女の経験値
-                bytes.appendBits(info.muExp, 16);
-                bytes.appendBits(info.muExp >> 16, 4);
-
-                // ムーンブルクの王女のアイテム
-                const muItems = [...info.muItems];
-                while (muItems[muItems.length-1] === 0) {
-                    muItems.pop();
-                }
-                bytes.appendBits(muItems.length, 4);
-                for (const item of muItems) {
-                    bytes.appendBits(item, 7);
-                }
-            }
         }
-
-        if (bytes.bit !== 0) {
-            // ビットが半端だった場合、byte 単位に切り上げる
-            bytes.len++;
-            bytes.bit = 0;
-        }
-
-        if (bytes.len === 40) {
-            // 40 byte ある場合。最終バイトは 2bit までしかありえない。
-            // 全員が 8 個づつアイテムを持っている時に、314 bit になる
-            // 314 bit = 39 byte + 2 bit
-            // その場合には、code[39] を、code[8] に格納する(上位 2 bit)
-            bytes.code[8] = bytes.code[39];
-            bytes.len--;
-        }
-
-        // 最小 97 bit (13 byte / 18 文字) ～ 最大 312 bit (39 byte / 52 文字)
-
-        // チェックコード(CRC)を計算する
-        const crc = this.calcuteCrc(bytes);
-        bytes.code[0] |= (crc << 3) & 0xf8;
-        bytes.code[8] |= (crc >> 5) & 0x3f;
-
-        // バイト単位データを、文字(6 bit)単位に変換
-        const chars: number[] = [];
-        let dataLen = 0;
-        for (let i = 0; i < bytes.len; i++) {
-            if (i % 3 === 0) {
-                chars[dataLen++] = (bytes.code[i] >> 2) & 0x3f;
-                chars[dataLen] = (bytes.code[i] << 4) & 0x30;
-            } else if (i % 3 === 1) {
-                chars[dataLen++] |= (bytes.code[i] >> 4) & 0x0f;
-                chars[dataLen] = (bytes.code[i] << 2) & 0x3c;
-            } else if (i % 3 === 2) {
-                chars[dataLen++] |= (bytes.code[i] >> 6) & 0x03;
-                chars[dataLen++] = bytes.code[i] & 0x3f;
-            }
-        }
-        if (bytes.len % 3 !== 0) {
-            dataLen++;
-        }
-
-        // 暗号化
-        const nShift = ((chars[0] & 0x06) >> 1) + 1;
-        for (let i = 1; i < dataLen; i++) {
-            chars[i] = (chars[i] + chars[i - 1] + nShift) & 0x3f;
-        }
-
-        return this.toStringPassword(chars);
     }
 
-    /**
-     * DQ2 用復活の呪文を解析する
-     *
-     * @param password 復活の呪文
-     * @return 解析結果
-     */
-    analyzePassword(password: string): Dq2PasswordInfo | undefined {
-        const normalized = this.toNormalizePassword(password);
-        const passwordNums = this.toNumberPassword(normalized);
-        if (passwordNums.length < JUMON_MIN_LENGTH || JUMON_MAX_LENGTH < passwordNums.length) {
-            return undefined;
+    if (bytes.bit !== 0) {
+        // ビットが半端だった場合、byte 単位に切り上げる
+        bytes.len++;
+        bytes.bit = 0;
+    }
+
+    if (bytes.len === 40) {
+        // 40 byte ある場合。最終バイトは 2bit までしかありえない。
+        // 全員が 8 個づつアイテムを持っている時に、314 bit になる
+        // 314 bit = 39 byte + 2 bit
+        // その場合には、code[39] を、code[8] に格納する(上位 2 bit)
+        bytes.code[8] = bytes.code[39];
+        bytes.len--;
+    }
+
+    // 最小 97 bit (13 byte / 18 文字) ～ 最大 312 bit (39 byte / 52 文字)
+
+    // チェックコード(CRC)を計算する
+    const crc = calcuteCrc(bytes);
+    bytes.code[0] |= (crc << 3) & 0xf8;
+    bytes.code[8] |= (crc >> 5) & 0x3f;
+
+    // バイト単位データを、文字(6 bit)単位に変換
+    const chars: number[] = [];
+    let dataLen = 0;
+    for (let i = 0; i < bytes.len; i++) {
+        if (i % 3 === 0) {
+            chars[dataLen++] = (bytes.code[i] >> 2) & 0x3f;
+            chars[dataLen] = (bytes.code[i] << 4) & 0x30;
+        } else if (i % 3 === 1) {
+            chars[dataLen++] |= (bytes.code[i] >> 4) & 0x0f;
+            chars[dataLen] = (bytes.code[i] << 2) & 0x3c;
+        } else if (i % 3 === 2) {
+            chars[dataLen++] |= (bytes.code[i] >> 6) & 0x03;
+            chars[dataLen++] = bytes.code[i] & 0x3f;
         }
+    }
+    if (bytes.len % 3 !== 0) {
+        dataLen++;
+    }
 
-        // 復号
-        const nShift = ((passwordNums[0] & 0x06) >> 1) + 1;
-        for (let i = passwordNums.length - 1; 0 < i; i--) {
-            passwordNums[i] = (passwordNums[i] - passwordNums[i - 1] - nShift) & 0x3f;
-        }
+    // 暗号化
+    const nShift = ((chars[0] & 0x06) >> 1) + 1;
+    for (let i = 1; i < dataLen; i++) {
+        chars[i] = (chars[i] + chars[i - 1] + nShift) & 0x3f;
+    }
 
-        // 文字(6bit)単位を、バイト単位に変換
-        const bytes = new BitArray();
-        passwordNums.forEach(it => bytes.appendBits(it, 6));
-        if (bytes.bit !== 0) {
-            bytes.len++;
-            bytes.bit = 0;
-        }
+    return toStringPassword(chars);
+}
 
-        const crc = ((bytes.code[0] & 0xf8) >> 3) | ((bytes.code[8] & 0x3f) << 5)
-        bytes.code[0] &= ~0xf8;
-        bytes.code[8] &= ~0x3f;
+/**
+ * DQ2 用復活の呪文を解析する
+ *
+ * @param password 復活の呪文
+ * @return 解析結果
+ */
+export const analyzePassword = (password: string): Dq2PasswordInfo | undefined => {
+    const normalized = toNormalizePassword(password);
+    const passwordNums = toNumberPassword(normalized);
+    if (passwordNums.length < JUMON_MIN_LENGTH || JUMON_MAX_LENGTH < passwordNums.length) {
+        return undefined;
+    }
 
-        if (bytes.len === 39) {
-            bytes.code[39] = bytes.code[8] & 0xc0;
-            bytes.len = 40;
-        }
+    // 復号
+    const nShift = ((passwordNums[0] & 0x06) >> 1) + 1;
+    for (let i = passwordNums.length - 1; 0 < i; i--) {
+        passwordNums[i] = (passwordNums[i] - passwordNums[i - 1] - nShift) & 0x3f;
+    }
 
-        let hasError = false;
+    // 文字(6bit)単位を、バイト単位に変換
+    const bytes = new BitArray();
+    passwordNums.forEach(it => bytes.appendBits(it, 6));
+    if (bytes.bit !== 0) {
+        bytes.len++;
+        bytes.bit = 0;
+    }
 
-        // 復活の場所
-        const town = bytes.code[0] & 0x07;
+    const crc = ((bytes.code[0] & 0xf8) >> 3) | ((bytes.code[8] & 0x3f) << 5)
+    bytes.code[0] &= ~0xf8;
+    bytes.code[8] &= ~0x3f;
 
-        let roNameNums = [
-            bytes.code[3] & 0x3f,
-            (
-                ((bytes.code[1] << 4) & 0x30)
-                | ((bytes.code[5] << 3) & 0x08)
-                | ((bytes.code[3] >> 5) & 0x06)
-                | ((bytes.code[5] >> 7) & 0x01)
-            ),
-            (bytes.code[1] >> 2) & 0x3f,
-            (bytes.code[5] >> 1) & 0x3f,
-        ];
+    if (bytes.len === 39) {
+        bytes.code[39] = bytes.code[8] & 0xc0;
+        bytes.len = 40;
+    }
 
-        if (roNameNums.indexOf(63) !== -1) {
+    let hasError = false;
+
+    // 復活の場所
+    const town = bytes.code[0] & 0x07;
+
+    let roNameNums = [
+        bytes.code[3] & 0x3f,
+        (
+            ((bytes.code[1] << 4) & 0x30)
+            | ((bytes.code[5] << 3) & 0x08)
+            | ((bytes.code[3] >> 5) & 0x06)
+            | ((bytes.code[5] >> 7) & 0x01)
+        ),
+        (bytes.code[1] >> 2) & 0x3f,
+        (bytes.code[5] >> 1) & 0x3f,
+    ];
+
+    if (roNameNums.indexOf(63) !== -1) {
+        hasError = true;
+        roNameNums = roNameNums.filter(it => it !== 63);
+    }
+
+    // ローレシアの王子の名前
+    const roName = toStringName(roNameNums);
+
+    // 所持金
+    const gold = (bytes.code[2] << 8) | bytes.code[4];
+
+    // 暗号化キー
+    const cryptKey = (
+        ((bytes.code[6] >> 7) & 0x01)
+        | ((bytes.code[7] >> 4) & 0x0e)
+    );
+    // 洞窟の浅瀬で月のかけらを false:使ってない, true:使った
+    const flagMoon = ((bytes.code[6] >> 6) & 0x01) !== 0;
+    // テパの村の水門を false:開いていない, true:開いた
+    const flagGate = ((bytes.code[6] >> 5) & 0x01) !== 0;
+    // 「みずのはごろも」を false:縫ってもらっていない, true:縫ってもらった
+    const flagPlumage = ((bytes.code[6] >> 4) & 0x01) !== 0;
+    // ルプガナの街で 0:何もしていない, 1:女の子を助けた, 2:船をもらった
+    const statShip = (bytes.code[6] >> 2) & 0x03;
+    // サマルトリアの王子を 0:見つけていない, 1:探して、王様にあった, 2:探して、勇者の泉に行った, 3:見つけた
+    const statPrince = bytes.code[6] & 0x03;
+
+    // 命の紋章
+    const crestLife = (bytes.code[7] & 0x10) !== 0;
+    // 水の紋章
+    const crestWater = (bytes.code[7] & 0x08) !== 0;
+    // 月の紋章
+    const crestMoon = (bytes.code[7] & 0x04) !== 0;
+    // 星の紋章
+    const crestStar = (bytes.code[7] & 0x02) !== 0;
+    // 太陽の紋章
+    const crestSun = (bytes.code[7] & 0x01) !== 0;
+
+    const bitReader = new BitReader(bytes);
+    bitReader.len = 9;
+
+    let roExp = bitReader.readBits(16)
+    roExp |= bitReader.readBits(4) << 16
+    let roItemLen = bitReader.readBits(4);
+    if (8 < roItemLen) {
+        hasError = true;
+        roItemLen = 8;
+    }
+    const roItems = [...Array(roItemLen)].map(_ => bitReader.readBits(7));
+
+    const saFlag = bitReader.readBits(1) !== 0;
+    let saExp = 0;
+    let saItemLen = 0;
+    let saItems: number[] = [];
+    let muFlag = false;
+    let muExp = 0;
+    let muItemLen = 0;
+    let muItems: number[] = [];
+
+    if (saFlag) {
+        saExp = bitReader.readBits(16)
+        saExp |= bitReader.readBits(4) << 16
+        saItemLen = bitReader.readBits(4);
+        if (8 < saItemLen) {
             hasError = true;
-            roNameNums = roNameNums.filter(it => it !== 63);
+            saItemLen = 8;
         }
+        saItems = [...Array(saItemLen)].map(_ => bitReader.readBits(7));
 
-        // ローレシアの王子の名前
-        const roName = this.toStringName(roNameNums);
-
-        // 所持金
-        const gold = (bytes.code[2] << 8) | bytes.code[4];
-
-        // 暗号化キー
-        const cryptKey = (
-            ((bytes.code[6] >> 7) & 0x01)
-            | ((bytes.code[7] >> 4) & 0x0e)
-        );
-        // 洞窟の浅瀬で月のかけらを false:使ってない, true:使った
-        const flagMoon = ((bytes.code[6] >> 6) & 0x01) !== 0;
-        // テパの村の水門を false:開いていない, true:開いた
-        const flagGate = ((bytes.code[6] >> 5) & 0x01) !== 0;
-        // 「みずのはごろも」を false:縫ってもらっていない, true:縫ってもらった
-        const flagPlumage = ((bytes.code[6] >> 4) & 0x01) !== 0;
-        // ルプガナの街で 0:何もしていない, 1:女の子を助けた, 2:船をもらった
-        const statShip = (bytes.code[6] >> 2) & 0x03;
-        // サマルトリアの王子を 0:見つけていない, 1:探して、王様にあった, 2:探して、勇者の泉に行った, 3:見つけた
-        const statPrince = bytes.code[6] & 0x03;
-
-        // 命の紋章
-        const crestLife = (bytes.code[7] & 0x10) !== 0;
-        // 水の紋章
-        const crestWater = (bytes.code[7] & 0x08) !== 0;
-        // 月の紋章
-        const crestMoon = (bytes.code[7] & 0x04) !== 0;
-        // 星の紋章
-        const crestStar = (bytes.code[7] & 0x02) !== 0;
-        // 太陽の紋章
-        const crestSun = (bytes.code[7] & 0x01) !== 0;
-
-        const bitReader = new BitReader(bytes);
-        bitReader.len = 9;
-
-        let roExp = bitReader.readBits(16)
-        roExp |= bitReader.readBits(4) << 16
-        let roItemLen = bitReader.readBits(4);
-        if (8 < roItemLen) {
-            hasError = true;
-            roItemLen = 8;
-        }
-        const roItems = [...Array(roItemLen)].map(_ => bitReader.readBits(7));
-
-        const saFlag = bitReader.readBits(1) !== 0;
-        let saExp = 0;
-        let saItemLen = 0;
-        let saItems: number[] = [];
-        let muFlag = false;
-        let muExp = 0;
-        let muItemLen = 0;
-        let muItems: number[] = [];
-
-        if (saFlag) {
-            saExp = bitReader.readBits(16)
-            saExp |= bitReader.readBits(4) << 16
-            saItemLen = bitReader.readBits(4);
-            if (8 < saItemLen) {
+        muFlag = bitReader.readBits(1) !== 0;
+        if (muFlag) {
+            muExp = bitReader.readBits(16)
+            muExp |= bitReader.readBits(4) << 16
+            muItemLen = bitReader.readBits(4);
+            if (8 < muItemLen) {
                 hasError = true;
-                saItemLen = 8;
+                muItemLen = 8;
             }
-            saItems = [...Array(saItemLen)].map(_ => bitReader.readBits(7));
-
-            muFlag = bitReader.readBits(1) !== 0;
-            if (muFlag) {
-                muExp = bitReader.readBits(16)
-                muExp |= bitReader.readBits(4) << 16
-                muItemLen = bitReader.readBits(4);
-                if (8 < muItemLen) {
-                    hasError = true;
-                    muItemLen = 8;
-                }
-                muItems = [...Array(muItemLen)].map(_ => bitReader.readBits(7));
-            }
+            muItems = [...Array(muItemLen)].map(_ => bitReader.readBits(7));
         }
-
-        // byte(8 bit 単位) ⇒ 文字(6 bit 単位) ⇒ byte(8 bit 単位)と変換すると
-        // 端数で間延びすることがある。
-        // そのため、解析で使用したデータ長から CRC を求める範囲を決める
-        const bytesLen = bitReader.len + (bitReader.bit !== 0 ? 1 : 0);
-        if (bytesLen === 40) {
-            // 40 byte の場合、最後のバイトは 2 bit のみ使用するが、
-            // その 2 bit は、bytes[8] に格納して 39 byte として扱う
-            bytes.len = 39;
-        } else {
-            bytes.len = bytesLen;
-        }
-        // チェックコード(CRC)を計算する. 0 なら正常
-        const checkCode = crc - this.calcuteCrc(bytes);
-
-        const info: Dq2PasswordInfo = {
-            roName,
-            roItems,
-            roExp,
-            saFlag,
-            saItems,
-            saExp,
-
-            muFlag,
-            muItems,
-            muExp,
-
-            gold,
-            town,
-
-            flagMoon,
-            flagGate,
-            flagPlumage,
-            statShip,
-            statPrince,
-
-            crestLife,
-            crestWater,
-            crestMoon,
-            crestStar,
-            crestSun,
-
-            cryptKey,
-            checkCode,
-            valid: false,
-        };
-
-        // 呪文が正しいかどうかをチェック
-        const valid = this.checkInfo(info);
-        info.valid = valid && !hasError;
-        return info;
     }
 
-    /** アイテム一覧に不正なアイテム、不正な装備がないことをチェック */
-    private isValidItems(items: number[], mask: number): boolean {
-        const equippedTypes: string[] = [];
-        for (const item of items) {
-            const itemInfo = itemLabels[item & 0x3f];
-            if (itemInfo.illegal) {
-                return false;
-            }
-            const equipped = (item & 0x40) !== 0;
-            if (equipped && (!itemInfo.equip || (itemInfo.equip & mask) === 0)) {
-                return false;
-            }
-            const equipType = itemInfo.type;
-            if (equipped && equipType) {
-                if (equippedTypes.includes(equipType)) {
-                    // 同じタイプを二重に装備
-                    return false;
-                }
-                equippedTypes.push(equipType);
-            }
-        }
-        return true;
+    // byte(8 bit 単位) ⇒ 文字(6 bit 単位) ⇒ byte(8 bit 単位)と変換すると
+    // 端数で間延びすることがある。
+    // そのため、解析で使用したデータ長から CRC を求める範囲を決める
+    const bytesLen = bitReader.len + (bitReader.bit !== 0 ? 1 : 0);
+    if (bytesLen === 40) {
+        // 40 byte の場合、最後のバイトは 2 bit のみ使用するが、
+        // その 2 bit は、bytes[8] に格納して 39 byte として扱う
+        bytes.len = 39;
+    } else {
+        bytes.len = bytesLen;
     }
+    // チェックコード(CRC)を計算する. 0 なら正常
+    const checkCode = crc - calcuteCrc(bytes);
 
-    /** 呪文が正しいかどうかをチェック */
-    checkInfo(info: Dq2PasswordInfo): boolean {
-        if (info.checkCode !== 0) {
-            // チェックコードがあっていない
+    const info: Dq2PasswordInfo = {
+        roName,
+        roItems,
+        roExp,
+        saFlag,
+        saItems,
+        saExp,
+
+        muFlag,
+        muItems,
+        muExp,
+
+        gold,
+        town,
+
+        flagMoon,
+        flagGate,
+        flagPlumage,
+        statShip,
+        statPrince,
+
+        crestLife,
+        crestWater,
+        crestMoon,
+        crestStar,
+        crestSun,
+
+        cryptKey,
+        checkCode,
+        valid: false,
+    };
+
+    // 呪文が正しいかどうかをチェック
+    const valid = checkInfo(info);
+    info.valid = valid && !hasError;
+    return info;
+}
+
+/** アイテム一覧に不正なアイテム、不正な装備がないことをチェック */
+const isValidItems = (items: number[], mask: number): boolean => {
+    const equippedTypes: string[] = [];
+    for (const item of items) {
+        const itemInfo = itemLabels[item & 0x3f];
+        if (itemInfo.illegal) {
             return false;
         }
-        if (info.statShip === 3) {
-            // ルプガナの街の船のステータス不正
+        const equipped = (item & 0x40) !== 0;
+        if (equipped && (!itemInfo.equip || (itemInfo.equip & mask) === 0)) {
             return false;
         }
-        if (EXP_MAX_VALUE < info.roExp) {
+        const equipType = itemInfo.type;
+        if (equipped && equipType) {
+            if (equippedTypes.includes(equipType)) {
+                // 同じタイプを二重に装備
+                return false;
+            }
+            equippedTypes.push(equipType);
+        }
+    }
+    return true;
+}
+
+/** 呪文が正しいかどうかをチェック */
+export const checkInfo = (info: Dq2PasswordInfo): boolean => {
+    if (info.checkCode !== 0) {
+        // チェックコードがあっていない
+        return false;
+    }
+    if (info.statShip === 3) {
+        // ルプガナの街の船のステータス不正
+        return false;
+    }
+    if (EXP_MAX_VALUE < info.roExp) {
+        // 経験値の範囲が異常
+        return false;
+    }
+    if (!isValidItems(info.roItems, 1)) {
+        // 不正なアイテム、不正な装備をしている
+        return false;
+    }
+    if (info.town === 7) {
+        // 復活の場所が不正
+        return false;
+    }
+    if (info.saFlag) {
+        if (EXP_MAX_VALUE < info.saExp) {
             // 経験値の範囲が異常
             return false;
         }
-        if (!this.isValidItems(info.roItems, 1)) {
-            // 不正なアイテム、不正な装備をしている
+        // 不正なアイテム、不正な装備をしている
+        if (!isValidItems(info.saItems, 2)) {
             return false;
         }
-        if (info.town === 7) {
-            // 復活の場所が不正
-            return false;
-        }
-        if (info.saFlag) {
-            if (EXP_MAX_VALUE < info.saExp) {
-                // 経験値の範囲が異常
-                return false;
-            }
-            // 不正なアイテム、不正な装備をしている
-            if (!this.isValidItems(info.saItems, 2)) {
-                return false;
-            }
-        }
-        if (info.saFlag && info.muFlag) {
-            if (EXP_MAX_VALUE < info.muExp) {
-                // 経験値の範囲が異常
-                return false;
-            }
-            // 不正なアイテム、不正な装備をしている
-            if (!this.isValidItems(info.muItems, 4)) {
-                return false;
-            }
-        }
-        return true;
     }
+    if (info.saFlag && info.muFlag) {
+        if (EXP_MAX_VALUE < info.muExp) {
+            // 経験値の範囲が異常
+            return false;
+        }
+        // 不正なアイテム、不正な装備をしている
+        if (!isValidItems(info.muItems, 4)) {
+            return false;
+        }
+    }
+    return true;
+}
 
-    /**
-     * ハテナ付き呪文を元に、有効な呪文を作成する.
-     *
-     * @param password ハテナ付きパスワード
-     * @return 有効なパスワードの配列
-     */
-    hatenaPassword(password: string): string[] {
-        // ハテナを探す
-        const position = password.indexOf("？");
-        if (position === -1) {
-            // ハテナが無い
-            const info = this.analyzePassword(password);
-            return (info && info.valid)
-                ? [this.createPassword(info)]
-                : [];
+/**
+ * ハテナ付き呪文を元に、有効な呪文を作成する.
+ *
+ * @param password ハテナ付きパスワード
+ * @return 有効なパスワードの配列
+ */
+export const hatenaPassword = (password: string): string[] => {
+    // ハテナを探す
+    const position = password.indexOf("？");
+    if (position === -1) {
+        // ハテナが無い
+        const info = analyzePassword(password);
+        return (info && info.valid)
+            ? [createPassword(info)]
+            : [];
+    } else {
+        // ハテナがあった
+        const passwords: string[] = [];
+        for (let i = 0; i < JUMON_ALPHABET.length; i++) {
+            // 先頭のハテナに呪文に使える文字を仮定して、再帰呼び出しする
+            const newPassword = password.substring(0, position)
+                + JUMON_ALPHABET.charAt(i)
+                + password.substring(position + 1);
+            const resolved = hatenaPassword(newPassword);
+            Array.prototype.push.apply(passwords, resolved);
+        }
+        return passwords;
+    }
+}
+
+/**
+ * ハテナの数を数える.
+ * @param password ハテナ付きパスワード（正規化済）
+ * @return ハテナの数
+ */
+export const countHatena = (password: string): number => {
+    return password.split('').filter(ch => ch === '？').length;
+}
+
+/**
+ * アスタリスクの数を数える.
+ * @param password アスタリスク付きパスワード（正規化済）
+ * @return アスタリスクの数
+ */
+export const countAstarisk = (password: string): number => {
+    return password.split('').filter(ch => ch === '＊').length;
+}
+
+/**
+ * パスワードを編集する.
+ *
+ * ゆうて　いみや　おうきむ
+ * こうほ　りいゆ　うじとり
+ * やまあ　きらぺ　ぺぺぺぺ
+ * ぺぺぺ　ぺぺぺ　ぺぺぺぺ
+ * ぺぺぺ　ぺぺぺ　ぺぺぺぺ　ぺぺ
+ *
+ * @param pswd パスワード(18～52文字)
+ * @return 編集後パスワード
+ */
+export const editPassword = (pswd: string): string => {
+    let rest = pswd;
+    let output = "";
+    for (let i = 0; i < 5; i++) {
+        if (rest.length <= 3) {
+            break;
+        }
+        output += rest.substring(0, 3) + "　";
+        rest = rest.substring(3);
+        if (rest.length <= 3) {
+            break;
+        }
+        output += rest.substring(0, 3) + "　";
+        rest = rest.substring(3);
+        if (rest.length <= 4) {
+            break;
+        }
+        output += rest.substring(0, 4) + (i === 4 ? "　" : "\n");
+        rest = rest.substring(4);
+    }
+    output += rest;
+    return output;
+}
+
+export const getPartyNames = (roName: string): { saName: string, muName: string } => {
+    const saNames = [
+        "パウロ　", "ランド　", "カイン　", "アーサー",
+        "コナン　", "クッキー", "トンヌラ", "すけさん",
+    ];
+    const muNames = [
+        "まいこ　", "リンダ　", "サマンサ", "アイリン",
+        "マリア　", "ナナ　　", "あきな　", "プリン　",
+    ];
+
+    const roNameNums = toNumberName(roName);
+    let sum = 0;
+    let i = 0;
+    for (const num of roNameNums) {
+        if (10 <= num && num <= 31) {
+            sum += num + 33;
+        } else if (32 <= num && num <= 59) {
+            sum += num - 31;
+        } else if (60 <= num && num <= 61) {
+            sum += num - 47;
         } else {
-            // ハテナがあった
-            const passwords: string[] = [];
-            for (var i = 0; i < JUMON_ALPHABET.length; i++) {
-                // 先頭のハテナに呪文に使える文字を仮定して、再帰呼び出しする
-                const newPassword = password.substring(0, position)
-                    + JUMON_ALPHABET.charAt(i)
-                    + password.substring(position + 1);
-                const resolved = this.hatenaPassword(newPassword);
-                Array.prototype.push.apply(passwords, resolved);
-            }
-            return passwords;
+            break;
         }
     }
-
-    /**
-     * ハテナの数を数える.
-     * @param password ハテナ付きパスワード（正規化済）
-     * @return ハテナの数
-     */
-    countHatena(password: string): number {
-        return password.split('').filter(ch => ch === '？').length;
+    if (i > 1) {
+        sum--;
     }
-
-    /**
-     * アスタリスクの数を数える.
-     * @param password アスタリスク付きパスワード（正規化済）
-     * @return アスタリスクの数
-     */
-    countAstarisk(password: string): number {
-        return password.split('').filter(ch => ch === '＊').length;
-    }
-
-    /**
-     * パスワードを編集する.
-     *
-     * ゆうて　いみや　おうきむ
-     * こうほ　りいゆ　うじとり
-     * やまあ　きらぺ　ぺぺぺぺ
-     * ぺぺぺ　ぺぺぺ　ぺぺぺぺ
-     * ぺぺぺ　ぺぺぺ　ぺぺぺぺ　ぺぺ
-     *
-     * @param pswd パスワード(18～52文字)
-     * @return 編集後パスワード
-     */
-    editPassword(pswd: string): string {
-        let rest = pswd;
-        let output = "";
-        for (let i = 0; i < 5; i++) {
-            if (rest.length <= 3) {
-                break;
-            }
-            output += rest.substring(0, 3) + "　";
-            rest = rest.substring(3);
-            if (rest.length <= 3) {
-                break;
-            }
-            output += rest.substring(0, 3) + "　";
-            rest = rest.substring(3);
-            if (rest.length <= 4) {
-                break;
-            }
-            output += rest.substring(0, 4) + (i === 4 ? "　" : "\n");
-            rest = rest.substring(4);
-        }
-        output += rest;
-        return output;
-    }
-
-    getPartyNames(roName: string): { saName: string, muName: string } {
-        const saNames = [
-            "パウロ　", "ランド　", "カイン　", "アーサー",
-            "コナン　", "クッキー", "トンヌラ", "すけさん",
-        ];
-        const muNames = [
-            "まいこ　", "リンダ　", "サマンサ", "アイリン",
-            "マリア　", "ナナ　　", "あきな　", "プリン　",
-        ];
-
-        const roNameNums = this.toNumberName(roName);
-        let sum = 0;
-        let i = 0;
-        for (const num of roNameNums) {
-            if (10 <= num && num <= 31) {
-                sum += num + 33;
-            } else if (32 <= num && num <= 59) {
-                sum += num - 31;
-            } else if (60 <= num && num <= 61) {
-                sum += num - 47;
-            } else {
-                break;
-            }
-        }
-        if (i > 1) {
-            sum--;
-        }
-        const saName = saNames[((sum + 5) >> 3) & 0x07];
-        const muName = muNames[sum % 8];
-        return { saName, muName };
-    }
+    const saName = saNames[((sum + 5) >> 3) & 0x07];
+    const muName = muNames[sum % 8];
+    return { saName, muName };
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import * as dq2pswd from '../dq2pswd/dq2pswd';
+import * as dq2 from '../dq2pswd/dq2pswd';
 
 interface Props {
     /** ラベル名 */
@@ -9,7 +9,7 @@ interface Props {
     /** 値を変更 */
     setValue: (val: number) => void;
     /** 選択肢 */
-    items: ReadonlyArray<dq2pswd.LabelInfo>
+    items: ReadonlyArray<dq2.LabelInfo>
 }
 
 const SelectItem: React.FC<Props> = (props) => {

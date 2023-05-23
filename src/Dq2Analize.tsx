@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import * as dq2pswd from './dq2pswd/dq2pswd';
+import * as dq2 from './dq2pswd/dq2pswd';
 import Dq2Info from './Dq2Info'
 
 interface Props {
@@ -7,8 +7,6 @@ interface Props {
     setPassword: (password: string) => void;
     moveEdit: () => void;
 }
-
-const dq2 = new dq2pswd.Dq2Password();
 
 const Dq2Edit: React.FC<Props> = (props) => {
     // 入力中の呪文

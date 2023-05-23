@@ -1,5 +1,5 @@
 import React from 'react';
-import * as dq2pswd from '../dq2pswd/dq2pswd';
+import * as dq2 from '../dq2pswd/dq2pswd';
 
 interface Props {
     /** 装備者マスク. 1: ローレシア, 2: サマルトリア, 4: ムーンブルク */
@@ -9,7 +9,7 @@ interface Props {
     /** 値を変更 */
     setValue: (val: number) => void;
     /** 選択肢 */
-    items: ReadonlyArray<dq2pswd.LabelInfo>;
+    items: ReadonlyArray<dq2.LabelInfo>;
 }
 
 const EquipmentItem: React.FC<Props> = (props) => {

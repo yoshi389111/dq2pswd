@@ -2,7 +2,7 @@ import React from 'react';
 import OutputLabel from './parts/OutputLabel';
 import ButtonWithDialog from './parts/ButtonWithDialog';
 import TweetButton from './parts/TweetButton'
-import * as dq2pswd from './dq2pswd/dq2pswd';
+import * as dq2 from './dq2pswd/dq2pswd';
 import * as utils from './dq2utils';
 
 interface Props {
@@ -10,7 +10,6 @@ interface Props {
 }
 
 const Dq2Info: React.FC<Props> = (props) => {
-    const dq2 = new dq2pswd.Dq2Password();
     const info = dq2.analyzePassword(props.password);
     if (!info) {
         return null;
@@ -33,9 +32,9 @@ const Dq2Info: React.FC<Props> = (props) => {
                             label={i === 0 ? "どうぐ" : ""}
                             value={
                                 ((info.roItems[i] & 0x40) !== 0 ? "Ｅ " : "　 ")
-                                + dq2pswd.itemLabels[info.roItems[i] & 0x3f].name
+                                + dq2.itemLabels[info.roItems[i] & 0x3f].name
                             }
-                            error={!!dq2pswd.itemLabels[info.roItems[i] & 0x3f].illegal}
+                            error={!!dq2.itemLabels[info.roItems[i] & 0x3f].illegal}
                         />
                     ))
                 }
@@ -63,9 +62,9 @@ const Dq2Info: React.FC<Props> = (props) => {
                                     label={i === 0 ? "どうぐ" : ""}
                                     value={
                                         ((info.saItems[i] & 0x40) !== 0 ? "Ｅ " : "　 ")
-                                        + dq2pswd.itemLabels[info.saItems[i] & 0x3f].name
+                                        + dq2.itemLabels[info.saItems[i] & 0x3f].name
                                     }
-                                    error={!!dq2pswd.itemLabels[info.saItems[i] & 0x3f].illegal}
+                                    error={!!dq2.itemLabels[info.saItems[i] & 0x3f].illegal}
                                 />
                             ))
                         }
@@ -87,9 +86,9 @@ const Dq2Info: React.FC<Props> = (props) => {
                                     label={i === 0 ? "どうぐ" : ""}
                                     value={
                                         ((info.muItems[i] & 0x40) !== 0 ? "Ｅ " : "　 ")
-                                        + dq2pswd.itemLabels[info.muItems[i] & 0x3f].name
+                                        + dq2.itemLabels[info.muItems[i] & 0x3f].name
                                     }
-                                    error={!!dq2pswd.itemLabels[info.muItems[i] & 0x3f].illegal}
+                                    error={!!dq2.itemLabels[info.muItems[i] & 0x3f].illegal}
                                 />
                             ))
                         }
@@ -98,12 +97,12 @@ const Dq2Info: React.FC<Props> = (props) => {
             </div>
             <div className="frame">
                 <h2>ストーリー</h2>
-                <OutputLabel label="洞窟の浅瀬で" value={dq2pswd.flagMoonLabels[info.flagMoon ? 1 : 0].name} />
-                <OutputLabel label="テパの村で" value={dq2pswd.flagGateLabels[info.flagGate ? 1 : 0].name} />
-                <OutputLabel label="水のはごろもを" value={dq2pswd.flagPlumageLabels[info.flagPlumage ? 1 : 0].name} />
-                <OutputLabel label="ルプガナの街で" value={dq2pswd.statShipLabels[info.statShip].name} />
-                <OutputLabel label="仲間の王子を" value={dq2pswd.statPrinceLabels[info.statPrince].name} />
-                <OutputLabel label="復活の場所は" value={dq2pswd.towns[info.town].name} />
+                <OutputLabel label="洞窟の浅瀬で" value={dq2.flagMoonLabels[info.flagMoon ? 1 : 0].name} />
+                <OutputLabel label="テパの村で" value={dq2.flagGateLabels[info.flagGate ? 1 : 0].name} />
+                <OutputLabel label="水のはごろもを" value={dq2.flagPlumageLabels[info.flagPlumage ? 1 : 0].name} />
+                <OutputLabel label="ルプガナの街で" value={dq2.statShipLabels[info.statShip].name} />
+                <OutputLabel label="仲間の王子を" value={dq2.statPrinceLabels[info.statPrince].name} />
+                <OutputLabel label="復活の場所は" value={dq2.towns[info.town].name} />
             </div>
             <div className="frame">
                 <h2>紋章</h2>

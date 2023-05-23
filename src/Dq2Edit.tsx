@@ -6,7 +6,7 @@ import OutputLabel from './parts/OutputLabel';
 import EquipmentItem from './parts/EquipmentItem';
 import ButtonWithDialog from './parts/ButtonWithDialog';
 import TweetButton from './parts/TweetButton'
-import * as dq2pswd from './dq2pswd/dq2pswd';
+import * as dq2 from './dq2pswd/dq2pswd';
 import * as utils from './dq2utils';
 
 interface Props {
@@ -14,8 +14,6 @@ interface Props {
     setPassword: (password: string) => void;
     moveAnalize: () => void;
 }
-
-const dq2 = new dq2pswd.Dq2Password();
 
 // アイテムは 8 個固定
 type ItemList = [
@@ -28,7 +26,7 @@ const toItemList = (items: number[]): ItemList => {
     return [...Array(8)].map((_, i) => (i < items.length) ? items[i] : 0) as ItemList;
 }
 
-export const partyLabels: ReadonlyArray<dq2pswd.LabelInfo> = [
+export const partyLabels: ReadonlyArray<dq2.LabelInfo> = [
     { id: 0, name: "まだ仲間になっていない" },
     { id: 1, name: "仲間になった" },
 ];
@@ -108,7 +106,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
 
     /** 入力内容から復活の呪文を作成 */
     const createPassword = () => {
-        const info: dq2pswd.Dq2PasswordInfo = {
+        const info: dq2.Dq2PasswordInfo = {
 
             roName: roName,
             roItems: [...roItems],
@@ -152,46 +150,39 @@ const Dq2Edit: React.FC<Props> = (props) => {
             return null;
         }
 
-        // 表示用編集
-        const passwordInDialogue = (
-            <span>
-                {
-                    dq2.editPassword(password).split('\n').map((it, i) => (
-                        <React.Fragment key={`pswd-${i}`}>
-                            {it}<br />
-                        </React.Fragment>
-                    ))
-                }
-            </span>
-        );
-
-        // 王様のセリフ(全角スペースで幅調整している。注意)
-        const dialogue = info.valid ? (
-            <div>
-                ＊「そなたに　ふっかつのじゅもんを<br />
-                おしえよう！　　　　　　　　　　<br />
-                <br />
-                <div className="passwd-block">
-                    {passwordInDialogue}
-                </div>
-                <br />
-                ＊「これを　かきとめておくのだぞ。<br />
-            </div>
-        ) : (
-            <div>
-                <span className="error">じゅもんが　ちがいます</span><br />
-                <br />
-                <div className="passwd-block">
-                    {passwordInDialogue}
-                </div>
-            </div>
-        );
-
         return (
             <div id="overlay" onClick={() => setShow(false)}>
                 <div className="frame" onClick={(e) => e.stopPropagation()}>
                     <h2>勇者「{info.roName}」</h2>
-                    {dialogue}
+                    {info.valid ? (
+                        <div className="passwd-block">
+                            {/* formatter が行頭の全角空白を削除することがある。注意 */}
+                            ＊「そなたに　ふっかつのじゅもんを<br />
+                            &emsp;&emsp;おしえよう！<br />
+                            <br />
+                            {
+                                dq2.editPassword(password).split('\n').map((it, i) => (
+                                    <React.Fragment key={`pswd-${i}`}>
+                                        &emsp;&emsp;{it}<br />
+                                    </React.Fragment>
+                                ))
+                            }
+                            <br />
+                            ＊「これを　かきとめておくのだぞ。<br />
+                        </div>
+                    ) : (
+                        <div className="passwd-block">
+                            <span className="error">じゅもんが　ちがいます</span><br />
+                            <br />
+                            {
+                                dq2.editPassword(password).split('\n').map((it, i) => (
+                                    <React.Fragment key={`pswd-${i}`}>
+                                        {it}<br />
+                                    </React.Fragment>
+                                ))
+                            }
+                        </div>
+                    )}
                     <br />
                     <div className="button-area">
                         <div
@@ -223,12 +214,8 @@ const Dq2Edit: React.FC<Props> = (props) => {
                     setValue={setRoName}
                     placeholder="なまえをいれてください"
                 />
-                <div title="0～1,000,000 の範囲で入力してください">
-                    <InputNumber label="ＥＸ" value={roExp} setValue={setRoExp} max={dq2pswd.EXP_MAX_VALUE} />
-                </div>
-                <div title="0～65,535 の範囲で入力してください">
-                    <InputNumber label="Ｇ" value={gold} setValue={setGold} />
-                </div>
+                <InputNumber label="ＥＸ" value={roExp} setValue={setRoExp} max={dq2.EXP_MAX_VALUE} title="0～1,000,000 の範囲で入力してください" />
+                <InputNumber label="Ｇ" value={gold} setValue={setGold} title="0～65,535 の範囲で入力してください" />
                 <br />
                 <OutputLabel label="どうぐ" value="" />
                 {
@@ -242,7 +229,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
                                 items[i] = value;
                                 setRoItems(items);
                             }}
-                            items={dq2pswd.itemLabels}
+                            items={dq2.itemLabels}
                         />
                     ))
                 }
@@ -254,9 +241,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
                 <OutputLabel label="なまえ" value={names.saName} />
                 {saFlag !== 0 &&
                     <>
-                        <div title="0～1,000,000 の範囲で入力してください">
-                            <InputNumber label="ＥＸ" value={saExp} setValue={setSaExp} max={dq2pswd.EXP_MAX_VALUE} />
-                        </div>
+                        <InputNumber label="ＥＸ" value={saExp} setValue={setSaExp} max={dq2.EXP_MAX_VALUE} title="0～1,000,000 の範囲で入力してください" />
                         <br />
                         <OutputLabel label="どうぐ" value="" />
                         {
@@ -270,7 +255,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
                                         items[i] = value;
                                         setSaItems(items);
                                     }}
-                                    items={dq2pswd.itemLabels}
+                                    items={dq2.itemLabels}
                                 />
                             ))
                         }
@@ -288,9 +273,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
                 <OutputLabel label="なまえ" value={names.muName} />
                 {saFlag !== 0 && muFlag !== 0 &&
                     <>
-                        <div title="0～1,000,000 の範囲で入力してください">
-                            <InputNumber label="ＥＸ" value={muExp} setValue={setMuExp} max={dq2pswd.EXP_MAX_VALUE} />
-                        </div>
+                        <InputNumber label="ＥＸ" value={muExp} setValue={setMuExp} max={dq2.EXP_MAX_VALUE} title="0～1,000,000 の範囲で入力してください" />
                         <br />
                         <OutputLabel label="どうぐ" value="" />
                         {
@@ -304,7 +287,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
                                         items[i] = value;
                                         setMuItems(items);
                                     }}
-                                    items={dq2pswd.itemLabels}
+                                    items={dq2.itemLabels}
                                 />
                             ))
                         }
@@ -313,26 +296,24 @@ const Dq2Edit: React.FC<Props> = (props) => {
             </div>
             <div className="frame">
                 <h2>ストーリー</h2>
-                <SelectItem label="洞窟の浅瀬で" value={flagMoon} setValue={setFlagMoon} items={dq2pswd.flagMoonLabels} />
-                <SelectItem label="テパの村で" value={flagGate} setValue={setFlagGate} items={dq2pswd.flagGateLabels} />
-                <SelectItem label="水のはごろもを" value={flagPlumage} setValue={setFlagPlumage} items={dq2pswd.flagPlumageLabels} />
-                <SelectItem label="ルプガナの街で" value={statShip} setValue={setStatShip} items={dq2pswd.statShipLabels} />
-                <SelectItem label="仲間の王子を" value={statPrince} setValue={setStatPrince} items={dq2pswd.statPrinceLabels} />
-                <SelectItem label="復活の場所は" value={town} setValue={setTown} items={dq2pswd.towns} />
+                <SelectItem label="洞窟の浅瀬で" value={flagMoon} setValue={setFlagMoon} items={dq2.flagMoonLabels} />
+                <SelectItem label="テパの村で" value={flagGate} setValue={setFlagGate} items={dq2.flagGateLabels} />
+                <SelectItem label="水のはごろもを" value={flagPlumage} setValue={setFlagPlumage} items={dq2.flagPlumageLabels} />
+                <SelectItem label="ルプガナの街で" value={statShip} setValue={setStatShip} items={dq2.statShipLabels} />
+                <SelectItem label="仲間の王子を" value={statPrince} setValue={setStatPrince} items={dq2.statPrinceLabels} />
+                <SelectItem label="復活の場所は" value={town} setValue={setTown} items={dq2.towns} />
             </div>
             <div className="frame">
                 <h2>紋章</h2>
-                <SelectItem label="太陽" value={crestSun} setValue={setCrestSun} items={dq2pswd.crestLabels} />
-                <SelectItem label="星" value={crestStar} setValue={setCrestStar} items={dq2pswd.crestLabels} />
-                <SelectItem label="月" value={crestMoon} setValue={setCrestMoon} items={dq2pswd.crestLabels} />
-                <SelectItem label="水" value={crestWater} setValue={setCrestWater} items={dq2pswd.crestLabels} />
-                <SelectItem label="命" value={crestLife} setValue={setCrestLife} items={dq2pswd.crestLabels} />
+                <SelectItem label="太陽" value={crestSun} setValue={setCrestSun} items={dq2.crestLabels} />
+                <SelectItem label="星" value={crestStar} setValue={setCrestStar} items={dq2.crestLabels} />
+                <SelectItem label="月" value={crestMoon} setValue={setCrestMoon} items={dq2.crestLabels} />
+                <SelectItem label="水" value={crestWater} setValue={setCrestWater} items={dq2.crestLabels} />
+                <SelectItem label="命" value={crestLife} setValue={setCrestLife} items={dq2.crestLabels} />
             </div>
             <div className="frame">
                 <h2>そのほか</h2>
-                <div title="0～15 の範囲で入力してください">
-                    <InputNumber label="パターン" value={crypt} setValue={setCrypt} max={15} />
-                </div>
+                <InputNumber label="パターン" value={crypt} setValue={setCrypt} max={15} title="0～15 の範囲で入力してください" />
                 <OutputLabel
                     label="チェックコード"
                     value={utils.toHex2(crc)}
