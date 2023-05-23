@@ -1,5 +1,7 @@
 import React from 'react';
 import OutputLabel from './parts/OutputLabel';
+import ButtonWithDialog from './parts/ButtonWithDialog';
+import TweetButton from './parts/TweetButton'
 import * as dq2pswd from './dq2pswd/dq2pswd';
 import * as utils from './dq2utils';
 
@@ -38,21 +40,13 @@ const Dq2Info: React.FC<Props> = (props) => {
                     ))
                 }
                 <div className="button-area">
-                    <span
-                        className="button"
-                        onClick={() => {
-                            utils.clipboardCopy(dq2.editPassword(props.password));
-                        }}
-                    >【コピー】</span>
-                    <span
-                        className={[
-                            "button",
-                            info.valid ? "" : "disable",
-                        ].join(' ')}
-                        onClick={() => {
-                            utils.doTweet(info, props.password);
-                        }}
-                    >【ツイート】</span>
+                    <ButtonWithDialog
+                            buttonLabel='【コピー】'
+                            dialogLabel='Copied!'
+                            timeout={700}
+                            onClick={() => utils.clipboardCopy(dq2.editPassword(props.password))}
+                        />
+                        <TweetButton info={info} />
                 </div>
             </div>
             <div className="frame">

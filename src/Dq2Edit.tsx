@@ -4,6 +4,8 @@ import InputNumber from './parts/InputNumber';
 import SelectItem from './parts/SelectItem';
 import OutputLabel from './parts/OutputLabel';
 import EquipmentItem from './parts/EquipmentItem';
+import ButtonWithDialog from './parts/ButtonWithDialog';
+import TweetButton from './parts/TweetButton'
 import * as dq2pswd from './dq2pswd/dq2pswd';
 import * as utils from './dq2utils';
 
@@ -192,25 +194,17 @@ const Dq2Edit: React.FC<Props> = (props) => {
                     {dialogue}
                     <br />
                     <div className="button-area">
-                        <span
+                        <div
                             className="button"
                             onClick={() => setShow(false)}
-                        >【閉じる】</span>
-                        <span
-                            className="button"
-                            onClick={() => {
-                                utils.clipboardCopy(dq2.editPassword(password));
-                            }}
-                        >【コピー】</span>
-                        <span
-                            className={[
-                                "button",
-                                info.valid ? "" : "disable",
-                            ].join(' ')}
-                            onClick={() => {
-                                utils.doTweet(info, password);
-                            }}
-                        >【ツイート】</span>
+                        >【閉じる】</div>
+                        <ButtonWithDialog
+                            buttonLabel='【コピー】'
+                            dialogLabel='Copied!'
+                            timeout={700}
+                            onClick={() => utils.clipboardCopy(dq2.editPassword(password))}
+                        />
+                        <TweetButton info={info} />
                     </div>
                 </div>
             </div>

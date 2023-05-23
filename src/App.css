@@ -224,3 +224,22 @@ input[type="number"] {
   width: max-content; 
   text-align: left;
 }
+
+.dialog-target {
+  position: relative;
+}
+
+.dialog-on-button {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  background-color: #00000f;
+  border: 3px solid white;
+  border-radius: 0.5em;
+  padding: 10px;
+}
+
+.button-with-svg {
+  display: flex;
+  align-items: center;
+}
