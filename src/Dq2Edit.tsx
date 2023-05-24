@@ -57,11 +57,11 @@ const Dq2Edit: React.FC<Props> = (props) => {
     const [statShip, setStatShip] = useState<number>(0);
     const [statPrince, setStatPrince] = useState<number>(0);
 
-    const [crestLife, setCrestLife] = useState<number>(0);
-    const [crestWater, setCrestWater] = useState<number>(0);
-    const [crestMoon, setCrestMoon] = useState<number>(0);
-    const [crestStar, setCrestStar] = useState<number>(0);
-    const [crestSun, setCrestSun] = useState<number>(0);
+    const [crestLife, setCrestLife] = useState<boolean>(false);
+    const [crestWater, setCrestWater] = useState<boolean>(false);
+    const [crestMoon, setCrestMoon] = useState<boolean>(false);
+    const [crestStar, setCrestStar] = useState<boolean>(false);
+    const [crestSun, setCrestSun] = useState<boolean>(false);
 
     const [crypt, setCrypt] = useState<number>(0);
     const [crc, setCrc] = useState<number>(0);
@@ -94,11 +94,11 @@ const Dq2Edit: React.FC<Props> = (props) => {
             setStatShip(info.statShip);
             setStatPrince(info.statPrince);
 
-            setCrestLife(info.crestLife ? 1 : 0);
-            setCrestWater(info.crestWater ? 1 : 0);
-            setCrestMoon(info.crestMoon ? 1 : 0);
-            setCrestStar(info.crestStar ? 1 : 0);
-            setCrestSun(info.crestSun ? 1 : 0);
+            setCrestLife(info.crestLife);
+            setCrestWater(info.crestWater);
+            setCrestMoon(info.crestMoon);
+            setCrestStar(info.crestStar);
+            setCrestSun(info.crestSun);
 
             setCrypt(info.cryptKey);
             setCrc(info.checkCode);
@@ -109,17 +109,17 @@ const Dq2Edit: React.FC<Props> = (props) => {
     const createPassword = () => {
         const info: dq2.Dq2PasswordInfo = {
 
-            roName: roName,
+            roName,
             roItems: [...roItems],
-            roExp: roExp,
+            roExp,
 
             saFlag: saFlag !== 0,
             saItems: [...saItems],
-            saExp: saExp,
+            saExp,
 
             muFlag: muFlag !== 0,
             muItems: [...muItems],
-            muExp: muExp,
+            muExp,
 
             gold,
             town,
@@ -127,14 +127,14 @@ const Dq2Edit: React.FC<Props> = (props) => {
             flagMoon: flagMoon !== 0,
             flagGate: flagGate !== 0,
             flagPlumage: flagPlumage !== 0,
-            statShip: statShip,
-            statPrince: statPrince,
+            statShip,
+            statPrince,
 
-            crestLife: crestLife !== 0,
-            crestWater: crestWater !== 0,
-            crestMoon: crestMoon !== 0,
-            crestStar: crestStar !== 0,
-            crestSun: crestSun !== 0,
+            crestLife,
+            crestWater,
+            crestMoon,
+            crestStar,
+            crestSun,
 
             cryptKey: crypt,
             checkCode: 0, // dummy
@@ -305,16 +305,16 @@ const Dq2Edit: React.FC<Props> = (props) => {
                 <SelectItem label="復活の場所は" value={town} setValue={setTown} items={dq2.towns} />
                 <br />
                 <CrestButtons
-                    sun={crestSun !== 0}
-                    star={crestStar !== 0}
-                    moon={crestMoon !== 0}
-                    water={crestWater !== 0}
-                    life={crestLife !== 0}
-                    setSun={(flag) => setCrestSun(flag ? 1 : 0)}
-                    setStar={(flag) => setCrestStar(flag ? 1 : 0)}
-                    setMoon={(flag) => setCrestMoon(flag ? 1 : 0)}
-                    setWater={(flag) => setCrestWater(flag ? 1 : 0)}
-                    setLife={(flag) => setCrestLife(flag ? 1 : 0)}
+                    sun={crestSun}
+                    star={crestStar}
+                    moon={crestMoon}
+                    water={crestWater}
+                    life={crestLife}
+                    setSun={setCrestSun}
+                    setStar={setCrestStar}
+                    setMoon={setCrestMoon}
+                    setWater={setCrestWater}
+                    setLife={setCrestLife}
                 />
             </div>
             <div className="frame">
