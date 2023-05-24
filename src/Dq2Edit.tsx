@@ -4,8 +4,9 @@ import InputNumber from './parts/InputNumber';
 import SelectItem from './parts/SelectItem';
 import OutputLabel from './parts/OutputLabel';
 import EquipmentItem from './parts/EquipmentItem';
+import CrestButtons from './parts/CrestButtons';
 import ButtonWithDialog from './parts/ButtonWithDialog';
-import TweetButton from './parts/TweetButton'
+import TweetButton from './parts/TweetButton';
 import * as dq2 from './dq2pswd/dq2pswd';
 import * as utils from './dq2utils';
 
@@ -302,14 +303,19 @@ const Dq2Edit: React.FC<Props> = (props) => {
                 <SelectItem label="ルプガナの街で" value={statShip} setValue={setStatShip} items={dq2.statShipLabels} />
                 <SelectItem label="仲間の王子を" value={statPrince} setValue={setStatPrince} items={dq2.statPrinceLabels} />
                 <SelectItem label="復活の場所は" value={town} setValue={setTown} items={dq2.towns} />
-            </div>
-            <div className="frame">
-                <h2>紋章</h2>
-                <SelectItem label="太陽" value={crestSun} setValue={setCrestSun} items={dq2.crestLabels} />
-                <SelectItem label="星" value={crestStar} setValue={setCrestStar} items={dq2.crestLabels} />
-                <SelectItem label="月" value={crestMoon} setValue={setCrestMoon} items={dq2.crestLabels} />
-                <SelectItem label="水" value={crestWater} setValue={setCrestWater} items={dq2.crestLabels} />
-                <SelectItem label="命" value={crestLife} setValue={setCrestLife} items={dq2.crestLabels} />
+                <br />
+                <CrestButtons
+                    sun={crestSun !== 0}
+                    star={crestStar !== 0}
+                    moon={crestMoon !== 0}
+                    water={crestWater !== 0}
+                    life={crestLife !== 0}
+                    setSun={(flag) => setCrestSun(flag ? 1 : 0)}
+                    setStar={(flag) => setCrestStar(flag ? 1 : 0)}
+                    setMoon={(flag) => setCrestMoon(flag ? 1 : 0)}
+                    setWater={(flag) => setCrestWater(flag ? 1 : 0)}
+                    setLife={(flag) => setCrestLife(flag ? 1 : 0)}
+                />
             </div>
             <div className="frame">
                 <h2>そのほか</h2>

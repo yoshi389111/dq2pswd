@@ -1,7 +1,8 @@
 import React from 'react';
 import OutputLabel from './parts/OutputLabel';
+import CrestButtons from './parts/CrestButtons';
 import ButtonWithDialog from './parts/ButtonWithDialog';
-import TweetButton from './parts/TweetButton'
+import TweetButton from './parts/TweetButton';
 import * as dq2 from './dq2pswd/dq2pswd';
 import * as utils from './dq2utils';
 
@@ -103,14 +104,14 @@ const Dq2Info: React.FC<Props> = (props) => {
                 <OutputLabel label="ルプガナの街で" value={dq2.statShipLabels[info.statShip].name} />
                 <OutputLabel label="仲間の王子を" value={dq2.statPrinceLabels[info.statPrince].name} />
                 <OutputLabel label="復活の場所は" value={dq2.towns[info.town].name} />
-            </div>
-            <div className="frame">
-                <h2>紋章</h2>
-                <OutputLabel label="太陽" value={info.crestSun ? "未入手" : "入手済"} />
-                <OutputLabel label="星" value={info.crestStar ? "未入手" : "入手済"} />
-                <OutputLabel label="月" value={info.crestMoon ? "未入手" : "入手済"} />
-                <OutputLabel label="水" value={info.crestWater ? "未入手" : "入手済"} />
-                <OutputLabel label="命" value={info.crestLife ? "未入手" : "入手済"} />
+                <br />
+                <CrestButtons
+                    sun={info.crestSun}
+                    star={info.crestStar}
+                    moon={info.crestMoon}
+                    water={info.crestWater}
+                    life={info.crestLife}
+                />
             </div>
             <div className="frame">
                 <h2>そのほか</h2>
