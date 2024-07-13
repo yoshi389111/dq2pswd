@@ -393,7 +393,7 @@ export const flagPlumageLabels: ReadonlyArray<LabelInfo> = [
 export const statShipLabels: ReadonlyArray<LabelInfo> = [
   { id: 0, name: '何もしていない' },
   { id: 1, name: '女の子を助けた' },
-  { id: 2, name: '（不正な状態）', illegal: true },
+  { id: 2, name: '（船をもらった）' },
   { id: 3, name: '船をもらった' },
 ];
 
@@ -924,10 +924,6 @@ const isValidItems = (items: number[], mask: number): boolean => {
 export const checkInfo = (info: Dq2PasswordInfo): boolean => {
   if (info.checkCode !== 0) {
     // チェックコードがあっていない
-    return false;
-  }
-  if (info.statShip === 2) {
-    // ルプガナの街の船のステータス不正
     return false;
   }
   if (EXP_MAX_VALUE < info.roExp) {
