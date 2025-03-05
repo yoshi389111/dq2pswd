@@ -87,9 +87,9 @@
 
 node.js が必要です。
 
-package.json をみて start（開発中モードのWebが起動）か build（ビルドしたあと既存のwebサービスに登録して使用する）を起動してください。
+package.json をみて start（開発中モードの Web が起動）か build（ビルドしたあと既存の web サービスに登録して使用する）を起動してください。
 
-既存のwebサーバに入れる場合には、パス名を package.json の homepage に登録（パスがなくてルートで動かすなら削除）してください。
+既存の web サーバに入れる場合には、パス名を package.json の homepage に登録（パスがなくてルートで動かすなら削除）してください。
 
 ## 改造したい場合
 
@@ -97,9 +97,16 @@ package.json をみて start（開発中モードのWebが起動）か build（�
 
 以下を使用しています。
 
-* node.js
-* typescript
-* react
+- node.js
+- typescript
+- react
+
+## 参考資料
+
+アルゴリズムは、以下の書籍を参考にしました。
+
+- 雑誌『The BASIC』技術評論社、1987 年 6 月号、102-112 頁 - N88-BASIC 版プログラム掲載
+- 雑誌『The BASIC』技術評論社、1987 年 8 月号、167 頁 - 訂正記事
 
 ## ライセンス
 
@@ -109,4 +116,4 @@ MIT License
 
 ## その他のドキュメント
 
-* [yoshi389111/dq1pswd](https://github.com/yoshi389111/dq1pswd) - ふっかつのじゅもんを作れます。１の方です。
+- [yoshi389111/dq1pswd](https://github.com/yoshi389111/dq1pswd) - ふっかつのじゅもんを作れます。１の方です。
