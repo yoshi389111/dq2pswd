@@ -168,11 +168,10 @@ it('dq2pswd.createPassword and dq2pswd.analyzePassword', () => {
   const password = dq2.createPassword(info);
   expect(password).toEqual('がぺぎごよけすすたてにやられがげじぞ');
   const info2 = dq2.analyzePassword(password);
-  expect(info2).not.toBeNull();
+  expect(info2).not.toBeUndefined();
   if (!info2) {
     // ESLint の警告を抑止するため。
-    // 前段で null でないことのチェックをしているので、ここに来ることはない
-    return;
+    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info2.roName).toEqual(info.roName);
   expect(info2.gold).toEqual(info.gold);
@@ -202,14 +201,198 @@ it('dq2pswd.createPassword and dq2pswd.analyzePassword', () => {
   expect(info2.valid).toEqual(info.valid);
 });
 
-it('dq2pswd.analyzePassword', () => {
-  const info = dq2.analyzePassword('ぺにはまぜゆされせつにさそはこそてきさひまじさそてきその');
+it('dq2pswd.analyzePassword 18文字', () => {
+  const info = dq2.analyzePassword('がぺぎごよけすすげあえふまめゆりろぎ');
 
-  expect(info).not.toBeNull();
+  expect(info).not.toBeUndefined();
   if (!info) {
     // ESLint の警告を抑止するため。
-    // 前段で null でないことのチェックをしているので、ここに来ることはない
-    return;
+    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+  }
+  expect(info.roName).toEqual('あ　　　');
+  expect(info.gold).toEqual(0);
+  expect(info.town).toEqual(0);
+  expect(info.flagMoon).toEqual(false);
+  expect(info.flagGate).toEqual(false);
+  expect(info.flagPlumage).toEqual(false);
+  expect(info.statShip).toEqual(0);
+  expect(info.statPrince).toEqual(0);
+
+  expect(info.crestLife).toEqual(false);
+  expect(info.crestWater).toEqual(false);
+  expect(info.crestMoon).toEqual(false);
+  expect(info.crestStar).toEqual(false);
+  expect(info.crestSun).toEqual(false);
+
+  expect(info.roExp).toEqual(0);
+  expect(info.roItems).toEqual([]);
+  expect(info.saFlag).toEqual(false);
+  expect(info.saExp).toEqual(0);
+  expect(info.saItems).toEqual([]);
+  expect(info.muFlag).toEqual(false);
+  expect(info.muExp).toEqual(0);
+  expect(info.muItems).toEqual([]);
+
+  expect(info.cryptKey).toEqual(15);
+  expect(info.checkCode).toEqual(0);
+  expect(info.valid).toEqual(true);
+});
+
+it('dq2pswd.analyzePassword 19文字', () => {
+  const info = dq2.analyzePassword('じえざずりこすしせつとなぬのひまむうゆ');
+
+  expect(info).not.toBeUndefined();
+  if (!info) {
+    // ESLint の警告を抑止するため。
+    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+  }
+  expect(info.roName).toEqual('あ　　　');
+  expect(info.gold).toEqual(0);
+  expect(info.town).toEqual(0);
+  expect(info.flagMoon).toEqual(false);
+  expect(info.flagGate).toEqual(false);
+  expect(info.flagPlumage).toEqual(false);
+  expect(info.statShip).toEqual(0);
+  expect(info.statPrince).toEqual(0);
+
+  expect(info.crestLife).toEqual(false);
+  expect(info.crestWater).toEqual(false);
+  expect(info.crestMoon).toEqual(false);
+  expect(info.crestStar).toEqual(false);
+  expect(info.crestSun).toEqual(false);
+
+  expect(info.roExp).toEqual(0);
+  expect(info.roItems).toEqual([1, 2]);
+  expect(info.saFlag).toEqual(false);
+  expect(info.saExp).toEqual(0);
+  expect(info.saItems).toEqual([]);
+  expect(info.muFlag).toEqual(false);
+  expect(info.muExp).toEqual(0);
+  expect(info.muItems).toEqual([]);
+
+  expect(info.cryptKey).toEqual(2);
+  expect(info.checkCode).toEqual(0);
+  expect(info.valid).toEqual(true);
+});
+
+it('dq2pswd.analyzePassword 20文字', () => {
+  const info = dq2.analyzePassword('ごあぎぐめうおうやらりはひふへむめうやぴ');
+
+  expect(info).not.toBeUndefined();
+  if (!info) {
+    // ESLint の警告を抑止するため。
+    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+  }
+  expect(info.roName).toEqual('あ　　　');
+  expect(info.gold).toEqual(0);
+  expect(info.town).toEqual(0);
+  expect(info.flagMoon).toEqual(false);
+  expect(info.flagGate).toEqual(false);
+  expect(info.flagPlumage).toEqual(false);
+  expect(info.statShip).toEqual(0);
+  expect(info.statPrince).toEqual(0);
+
+  expect(info.crestLife).toEqual(false);
+  expect(info.crestWater).toEqual(false);
+  expect(info.crestMoon).toEqual(false);
+  expect(info.crestStar).toEqual(false);
+  expect(info.crestSun).toEqual(false);
+
+  expect(info.roExp).toEqual(0);
+  expect(info.roItems).toEqual([1, 2, 3]);
+  expect(info.saFlag).toEqual(false);
+  expect(info.saExp).toEqual(0);
+  expect(info.saItems).toEqual([]);
+  expect(info.muFlag).toEqual(false);
+  expect(info.muExp).toEqual(0);
+  expect(info.muItems).toEqual([]);
+
+  expect(info.cryptKey).toEqual(3);
+  expect(info.checkCode).toEqual(0);
+  expect(info.valid).toEqual(true);
+});
+
+it('dq2pswd.analyzePassword 22文字', () => {
+  const info = dq2.analyzePassword('さふこしぽめゆやよわぎのひへまゆらけろおぬの');
+
+  expect(info).not.toBeUndefined();
+  if (!info) {
+    // ESLint の警告を抑止するため。
+    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+  }
+  expect(info.roName).toEqual('あ　　　');
+  expect(info.gold).toEqual(0);
+  expect(info.town).toEqual(0);
+  expect(info.flagMoon).toEqual(false);
+  expect(info.flagGate).toEqual(false);
+  expect(info.flagPlumage).toEqual(false);
+  expect(info.statShip).toEqual(0);
+  expect(info.statPrince).toEqual(0);
+
+  expect(info.crestLife).toEqual(false);
+  expect(info.crestWater).toEqual(false);
+  expect(info.crestMoon).toEqual(false);
+  expect(info.crestStar).toEqual(false);
+  expect(info.crestSun).toEqual(false);
+
+  expect(info.roExp).toEqual(0);
+  expect(info.roItems).toEqual([1, 2, 3, 4]);
+  expect(info.saFlag).toEqual(false);
+  expect(info.saExp).toEqual(0);
+  expect(info.saItems).toEqual([]);
+  expect(info.muFlag).toEqual(false);
+  expect(info.muExp).toEqual(0);
+  expect(info.muItems).toEqual([]);
+
+  expect(info.cryptKey).toEqual(4);
+  expect(info.checkCode).toEqual(0);
+  expect(info.valid).toEqual(true);
+});
+
+it('dq2pswd.analyzePassword 23文字', () => {
+  const info = dq2.analyzePassword('へぐほむにぶぴぴみられぱぺいおすたじにごえちと');
+
+  expect(info).not.toBeUndefined();
+  if (!info) {
+    // ESLint の警告を抑止するため。
+    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+  }
+  expect(info.roName).toEqual('あ　　　');
+  expect(info.gold).toEqual(0);
+  expect(info.town).toEqual(0);
+  expect(info.flagMoon).toEqual(false);
+  expect(info.flagGate).toEqual(false);
+  expect(info.flagPlumage).toEqual(false);
+  expect(info.statShip).toEqual(0);
+  expect(info.statPrince).toEqual(0);
+
+  expect(info.crestLife).toEqual(false);
+  expect(info.crestWater).toEqual(false);
+  expect(info.crestMoon).toEqual(false);
+  expect(info.crestStar).toEqual(false);
+  expect(info.crestSun).toEqual(false);
+
+  expect(info.roExp).toEqual(0);
+  expect(info.roItems).toEqual([1, 2, 3, 4, 5]);
+  expect(info.saFlag).toEqual(false);
+  expect(info.saExp).toEqual(0);
+  expect(info.saItems).toEqual([]);
+  expect(info.muFlag).toEqual(false);
+  expect(info.muExp).toEqual(0);
+  expect(info.muItems).toEqual([]);
+
+  expect(info.cryptKey).toEqual(5);
+  expect(info.checkCode).toEqual(0);
+  expect(info.valid).toEqual(true);
+});
+
+it('dq2pswd.analyzePassword 28文字', () => {
+  const info = dq2.analyzePassword('ぺにはまぜゆされせつにさそはこそてきさひまじさそてきその');
+
+  expect(info).not.toBeUndefined();
+  if (!info) {
+    // ESLint の警告を抑止するため。
+    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info.roName).toEqual('あいうえ');
   expect(info.gold).toEqual(456);
@@ -240,33 +423,83 @@ it('dq2pswd.analyzePassword', () => {
   expect(info.valid).toEqual(true);
 });
 
-// it("dq2pswd.hatenaPassword", () => {
-//     const dq2 = new dq2pswd.Dq2Password();
-//     expect(dq2.hatenaPassword("ふるいけや  かわずとびこむ  みずのおと  あ？？")).toEqual([
-//         "ふるいけやかわずとびこむみずのおとあえほ",
-//         "ふるいけやかわずとびこむみずのおとあおぞ",
-//         "ふるいけやかわずとびこむみずのおとあきぐ",
-//         "ふるいけやかわずとびこむみずのおとあさお",
-//         "ふるいけやかわずとびこむみずのおとあへれ",
-//         "ふるいけやかわずとびこむみずのおとあまも",
-//         "ふるいけやかわずとびこむみずのおとあむぼ",
-//         "ふるいけやかわずとびこむみずのおとあもづ",
-//         "ふるいけやかわずとびこむみずのおとあよて",
-//         "ふるいけやかわずとびこむみずのおとありし",
-//         "ふるいけやかわずとびこむみずのおとあれる",
-//         "ふるいけやかわずとびこむみずのおとあわめ",
-//         "ふるいけやかわずとびこむみずのおとあぶそ",
-//         "ふるいけやかわずとびこむみずのおとあぼく"]);
-//     expect(dq2.hatenaPassword("ふるいけや　かわずとびこむ　みずのおと　？？？").length).toEqual(900);
-// });
+it('dq2pswd.analyzePassword 52文字', () => {
+  const info = dq2.analyzePassword(
+    'けのかきべひへひふもゆぜぞばびあいもえへぎぶぽえらげござずぜはぐぼいかねけかりるれろずぴめおまげひざぺか'
+  );
 
-// it("dq2pswd.countHatena", () => {
-//     const dq2 = new dq2pswd.Dq2Password();
-//     expect(dq2.countHatena("ふるいけやかわずとびこむみずのおとばしや")).toEqual(0);
-//     expect(dq2.countHatena("ふるいけやかわずとびこむみずのおとばし？")).toEqual(1);
-//     expect(dq2.countHatena("ふるいけやかわずとびこむみずのおとば？？")).toEqual(2);
-//     expect(dq2.countHatena("？るいけやかわずとびこむみずのおとば？？")).toEqual(3);
-// });
+  expect(info).not.toBeUndefined();
+  if (!info) {
+    // ESLint の警告を抑止するため。
+    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+  }
+  expect(info.roName).toEqual('あ　　　');
+  expect(info.gold).toEqual(0);
+  expect(info.town).toEqual(0);
+  expect(info.flagMoon).toEqual(false);
+  expect(info.flagGate).toEqual(false);
+  expect(info.flagPlumage).toEqual(false);
+  expect(info.statShip).toEqual(0);
+  expect(info.statPrince).toEqual(0);
+
+  expect(info.crestLife).toEqual(false);
+  expect(info.crestWater).toEqual(false);
+  expect(info.crestMoon).toEqual(false);
+  expect(info.crestStar).toEqual(false);
+  expect(info.crestSun).toEqual(false);
+
+  expect(info.roExp).toEqual(0);
+  expect(info.roItems).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+  expect(info.saFlag).toEqual(true);
+  expect(info.saExp).toEqual(0);
+  expect(info.saItems).toEqual([9, 10, 11, 12, 13, 14, 15, 16]);
+  expect(info.muFlag).toEqual(true);
+  expect(info.muExp).toEqual(0);
+  expect(info.muItems).toEqual([17, 18, 19, 20, 21, 22, 24, 25]);
+
+  expect(info.cryptKey).toEqual(6);
+  expect(info.checkCode).toEqual(0);
+  expect(info.valid).toEqual(true);
+});
+
+it('dq2pswd.analyzePassword 後ろに余計なデータ', () => {
+  const info = dq2.analyzePassword(
+    'ゆうていみやおうきむこうほりいゆうじとりやまあきらぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺぺ'
+  );
+
+  expect(info).not.toBeUndefined();
+  if (!info) {
+    // ESLint の警告を抑止するため。
+    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+  }
+  expect(info.roName).toEqual('もょもと');
+  expect(info.gold).toEqual(27671);
+  expect(info.town).toEqual(1);
+  expect(info.flagMoon).toEqual(false);
+  expect(info.flagGate).toEqual(false);
+  expect(info.flagPlumage).toEqual(false);
+  expect(info.statShip).toEqual(1);
+  expect(info.statPrince).toEqual(1);
+
+  expect(info.crestLife).toEqual(true);
+  expect(info.crestWater).toEqual(true);
+  expect(info.crestMoon).toEqual(false);
+  expect(info.crestStar).toEqual(false);
+  expect(info.crestSun).toEqual(true);
+
+  expect(info.roExp).toEqual(942197);
+  expect(info.roItems).toEqual([]);
+  expect(info.saFlag).toEqual(false);
+  expect(info.saExp).toEqual(0);
+  expect(info.saItems).toEqual([]);
+  expect(info.muFlag).toEqual(false);
+  expect(info.muExp).toEqual(0);
+  expect(info.muItems).toEqual([]);
+
+  expect(info.cryptKey).toEqual(6);
+  expect(info.checkCode).toEqual(0);
+  expect(info.valid).toEqual(true);
+});
 
 it('dq2pswd.editPassword', () => {
   expect(

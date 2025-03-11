@@ -737,10 +737,15 @@ export const analyzePassword = (password: string): Dq2PasswordInfo | undefined =
     bytes.len++;
     bytes.bit = 0;
   }
+  // バイト列の長さを補正
+  bytes.len = Math.floor((passwordNums.length * 6) / 8);
 
   const crc = ((bytes.code[0] & 0xf8) >> 3) | ((bytes.code[8] & 0x3f) << 5);
+
+  // チェックコード(CRC)を計算する. 0 なら正常
   bytes.code[0] &= ~0xf8;
   bytes.code[8] &= ~0x3f;
+  const checkCode = crc - calcuteCrc(bytes);
 
   if (bytes.len === 39) {
     bytes.code[39] = bytes.code[8] & 0xc0;
@@ -840,20 +845,6 @@ export const analyzePassword = (password: string): Dq2PasswordInfo | undefined =
       muItems = utils.range(muItemLen).map(() => bitReader.readBits(7));
     }
   }
-
-  // byte(8 bit 単位) ⇒ 文字(6 bit 単位) ⇒ byte(8 bit 単位)と変換すると
-  // 端数で間延びすることがある。
-  // そのため、解析で使用したデータ長から CRC を求める範囲を決める
-  const bytesLen = bitReader.len + (bitReader.bit !== 0 ? 1 : 0);
-  if (bytesLen === 40) {
-    // 40 byte の場合、最後のバイトは 2 bit のみ使用するが、
-    // その 2 bit は、bytes[8] に格納して 39 byte として扱う
-    bytes.len = 39;
-  } else {
-    bytes.len = bytesLen;
-  }
-  // チェックコード(CRC)を計算する. 0 なら正常
-  const checkCode = crc - calcuteCrc(bytes);
 
   const info: Dq2PasswordInfo = {
     // ローレシアの王子
