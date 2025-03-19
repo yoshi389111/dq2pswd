@@ -1,3 +1,4 @@
+import { expect, it } from 'vitest';
 import { BitArray, BitReader } from './bitarray';
 
 it('BitArray and BitReader', () => {

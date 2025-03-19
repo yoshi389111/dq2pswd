@@ -1,6 +1,7 @@
+import { expect, it } from 'vitest';
 import * as dq2 from './dq2pswd';
 
-test('dq2pswd.toStringName', () => {
+it('dq2pswd.toStringName', () => {
   expect(dq2.toStringName([0, 1, 2, 3])).toEqual('０１２３');
   expect(dq2.toStringName([10, 11, 12, 13])).toEqual('あいうえ');
   expect(dq2.toStringName([62, 62, 62, 62])).toEqual('　　　　');
@@ -171,7 +172,7 @@ it('dq2pswd.createPassword and dq2pswd.analyzePassword', () => {
   expect(info2).not.toBeUndefined();
   if (!info2) {
     // ESLint の警告を抑止するため。
-    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+    throw new Error('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info2.roName).toEqual(info.roName);
   expect(info2.gold).toEqual(info.gold);
@@ -207,7 +208,7 @@ it('dq2pswd.analyzePassword 18文字', () => {
   expect(info).not.toBeUndefined();
   if (!info) {
     // ESLint の警告を抑止するため。
-    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+    throw new Error('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info.roName).toEqual('あ　　　');
   expect(info.gold).toEqual(0);
@@ -244,7 +245,7 @@ it('dq2pswd.analyzePassword 19文字', () => {
   expect(info).not.toBeUndefined();
   if (!info) {
     // ESLint の警告を抑止するため。
-    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+    throw new Error('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info.roName).toEqual('あ　　　');
   expect(info.gold).toEqual(0);
@@ -281,7 +282,7 @@ it('dq2pswd.analyzePassword 20文字', () => {
   expect(info).not.toBeUndefined();
   if (!info) {
     // ESLint の警告を抑止するため。
-    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+    throw new Error('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info.roName).toEqual('あ　　　');
   expect(info.gold).toEqual(0);
@@ -318,7 +319,7 @@ it('dq2pswd.analyzePassword 22文字', () => {
   expect(info).not.toBeUndefined();
   if (!info) {
     // ESLint の警告を抑止するため。
-    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+    throw new Error('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info.roName).toEqual('あ　　　');
   expect(info.gold).toEqual(0);
@@ -355,7 +356,7 @@ it('dq2pswd.analyzePassword 23文字', () => {
   expect(info).not.toBeUndefined();
   if (!info) {
     // ESLint の警告を抑止するため。
-    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+    throw new Error('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info.roName).toEqual('あ　　　');
   expect(info.gold).toEqual(0);
@@ -392,7 +393,7 @@ it('dq2pswd.analyzePassword 28文字', () => {
   expect(info).not.toBeUndefined();
   if (!info) {
     // ESLint の警告を抑止するため。
-    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+    throw new Error('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info.roName).toEqual('あいうえ');
   expect(info.gold).toEqual(456);
@@ -431,7 +432,7 @@ it('dq2pswd.analyzePassword 52文字', () => {
   expect(info).not.toBeUndefined();
   if (!info) {
     // ESLint の警告を抑止するため。
-    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+    throw new Error('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info.roName).toEqual('あ　　　');
   expect(info.gold).toEqual(0);
@@ -470,7 +471,7 @@ it('dq2pswd.analyzePassword 後ろに余計なデータ', () => {
   expect(info).not.toBeUndefined();
   if (!info) {
     // ESLint の警告を抑止するため。
-    fail('前段で undefined でないことのチェックをしているので、ここに来ることはない');
+    throw new Error('前段で undefined でないことのチェックをしているので、ここに来ることはない');
   }
   expect(info.roName).toEqual('もょもと');
   expect(info.gold).toEqual(27671);

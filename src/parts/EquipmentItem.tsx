@@ -1,5 +1,5 @@
 import React from 'react';
-import * as dq2 from 'dq2pswd/dq2pswd';
+import * as dq2 from '../dq2pswd/dq2pswd';
 
 interface Props {
   /** 装備者マスク. 1: ローレシア, 2: サマルトリア, 4: ムーンブルク */

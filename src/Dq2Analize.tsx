@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import * as dq2 from 'dq2pswd/dq2pswd';
-import Dq2Info from 'Dq2Info';
+import React, { useState, useEffect, useCallback } from 'react';
+import * as dq2 from './dq2pswd/dq2pswd';
+import Dq2Info from './Dq2Info';
 
 interface Props {
   password: string;
@@ -49,8 +49,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
     return count === 0 ? true : valid;
   };
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  const analyze = async (password: string): Promise<void> => {
+  const analyze = useCallback(async (password: string): Promise<void> => {
     if (!canAnalyze(password)) {
       setPasswords([]);
       setEmptyPasswords(false);
@@ -76,14 +75,14 @@ const Dq2Edit: React.FC<Props> = (props) => {
       setEmptyPasswords(false);
       setTargetPassword(normalized);
     }
-  };
+  }, []);
 
   // 初期表示
   useEffect(() => {
     if (props.password) {
       void analyze(props.password);
     }
-  }, [props.password]);
+  }, [props.password, analyze]);
 
   const errorMessage = (
     <div>
@@ -103,7 +102,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
           className={['passwd-block', 'password-selection'].join(' ')}
           key={`pw-${index}`}
           onClick={() => {
-            props.setPassword(pswd.replaceAll(/[　\n]/g, ''));
+            props.setPassword(pswd.replaceAll(/[\u3000\n]/g, ''));
             window.scrollTo(0, 0);
           }}
         >
@@ -127,7 +126,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
   return (
     <div>
       <div className='frame'>
-        <h2>ふっかつのじゅもんを　いれてください</h2>
+        <h2>ふっかつのじゅもんを&#x3000;いれてください</h2>
         <textarea
           className='password-area'
           cols={40}
