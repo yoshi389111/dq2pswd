@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import InputString from 'parts/InputString';
-import InputNumber from 'parts/InputNumber';
-import SelectItem from 'parts/SelectItem';
-import OutputLabel from 'parts/OutputLabel';
-import EquipmentItem from 'parts/EquipmentItem';
-import CrestButtons from 'parts/CrestButtons';
-import ButtonWithDialog from 'parts/ButtonWithDialog';
-import TweetButton from 'parts/TweetButton';
-import * as dq2 from 'dq2pswd/dq2pswd';
-import * as utils from 'utils/dq2utils';
+import InputString from './parts/InputString';
+import InputNumber from './parts/InputNumber';
+import SelectItem from './parts/SelectItem';
+import OutputLabel from './parts/OutputLabel';
+import EquipmentItem from './parts/EquipmentItem';
+import CrestButtons from './parts/CrestButtons';
+import ButtonWithDialog from './parts/ButtonWithDialog';
+import TweetButton from './parts/TweetButton';
+import * as dq2 from './dq2pswd/dq2pswd';
+import * as utils from './utils/dq2utils';
 
 interface Props {
   password: string;
@@ -24,7 +24,7 @@ const toItemList = (items: number[]): ItemList => {
   return utils.range(8).map((i) => (i < items.length ? items[i] : 0)) as ItemList;
 };
 
-export const partyLabels: ReadonlyArray<dq2.LabelInfo> = [
+const partyLabels: ReadonlyArray<dq2.LabelInfo> = [
   { id: 0, name: 'まだ仲間になっていない' },
   { id: 1, name: '仲間になった' },
 ];
@@ -70,7 +70,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
     }
     const info = dq2.analyzePassword(props.password);
     if (info) {
-      setRoName(info.roName.replaceAll(/　+$/g, ''));
+      setRoName(info.roName.replaceAll(/\u3000+$/g, ''));
       setRoItems(toItemList(info.roItems));
       setRoExp(info.roExp);
 
@@ -154,7 +154,7 @@ const Dq2Edit: React.FC<Props> = (props) => {
           {info.valid ? (
             <div className='passwd-block'>
               {/* formatter が行頭の全角空白を削除することがある。注意 */}
-              ＊「そなたに　ふっかつのじゅもんを
+              ＊「そなたに&#x3000;ふっかつのじゅもんを
               <br />
               &emsp;&emsp;おしえよう！
               <br />
@@ -169,12 +169,12 @@ const Dq2Edit: React.FC<Props> = (props) => {
                   </React.Fragment>
                 ))}
               <br />
-              ＊「これを　かきとめておくのだぞ。
+              ＊「これを&#x3000;かきとめておくのだぞ。
               <br />
             </div>
           ) : (
             <div className='passwd-block'>
-              <span className='error'>じゅもんが　ちがいます</span>
+              <span className='error'>じゅもんが&#x3000;ちがいます</span>
               <br />
               <br />
               {dq2

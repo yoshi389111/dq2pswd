@@ -1,6 +1,6 @@
 /** DQ2用復活の呪文の解析/捏造 */
 import { BitArray, BitReader } from './bitarray';
-import * as utils from 'utils/dq2utils';
+import * as utils from '../utils/dq2utils';
 
 /** 名前の長さ */
 const NAME_LENGTH = 4;
@@ -999,11 +999,11 @@ export const countAstarisk = (password: string): number => {
 /**
  * パスワードを編集する.
  *
- * ゆうて　いみや　おうきむ
- * こうほ　りいゆ　うじとり
- * やまあ　きらぺ　ぺぺぺぺ
- * ぺぺぺ　ぺぺぺ　ぺぺぺぺ
- * ぺぺぺ　ぺぺぺ　ぺぺぺぺ　ぺぺ
+ * ゆうて  いみや  おうきむ
+ * こうほ  りいゆ  うじとり
+ * やまあ  きらぺ  ぺぺぺぺ
+ * ぺぺぺ  ぺぺぺ  ぺぺぺぺ
+ * ぺぺぺ  ぺぺぺ  ぺぺぺぺ  ぺぺ
  *
  * @param pswd パスワード(18～52文字)
  * @return 編集後パスワード

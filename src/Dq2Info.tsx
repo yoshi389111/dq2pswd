@@ -1,10 +1,10 @@
 import React from 'react';
-import OutputLabel from 'parts/OutputLabel';
-import CrestButtons from 'parts/CrestButtons';
-import ButtonWithDialog from 'parts/ButtonWithDialog';
-import TweetButton from 'parts/TweetButton';
-import * as dq2 from 'dq2pswd/dq2pswd';
-import * as utils from 'utils/dq2utils';
+import OutputLabel from './parts/OutputLabel';
+import CrestButtons from './parts/CrestButtons';
+import ButtonWithDialog from './parts/ButtonWithDialog';
+import TweetButton from './parts/TweetButton';
+import * as dq2 from './dq2pswd/dq2pswd';
+import * as utils from './utils/dq2utils';
 
 interface Props {
   password: string;
