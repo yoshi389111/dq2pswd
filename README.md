@@ -1,5 +1,9 @@
 # ふっかつのじゅもん２
 
+<a href="LICENSE"><img src="images/badge_license.svg"></a>
+&nbsp;<img src="images/badge_typescript.svg">
+&nbsp;<img src="images/badge_react.svg">
+
 ## 概要
 
 ふっかつのじゅもんを作れます。２の方です。 → [１はこちら](https://github.com/yoshi389111/dq1pswd)
