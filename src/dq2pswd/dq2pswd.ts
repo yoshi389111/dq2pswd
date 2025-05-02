@@ -964,7 +964,7 @@ export const hatenaPassword = (password: string): string[] => {
   if (position === -1) {
     // ハテナが無い
     const info = analyzePassword(password);
-    return info && info.valid ? [createPassword(info)] : [];
+    return info && info.valid ? [password] : [];
   } else {
     // ハテナがあった
     const passwords: string[] = [];
@@ -1030,6 +1030,39 @@ export const editPassword = (pswd: string): string => {
   }
   output += rest;
   return output;
+};
+
+/**
+ * アスタリスク付き呪文を元に、有効な呪文を作成する.
+ *
+ * @param password アスタリスク付きパスワード
+ * @return 有効なパスワードの配列
+ */
+export const astariskPassword = (password: string): string[] => {
+  // アスタリスクを探す
+  const position = password.indexOf('＊');
+  if (position === -1) {
+    // アスタリスクが無い
+    return [];
+  } else {
+    // アスタリスクがあった. ※アスタリスクは1つだけの想定.
+    const passwords: string[] = [];
+    for (let i = 0; i < JUMON_ALPHABET.length; i++) {
+      const length = password.length - 1;
+      const repeatMin = Math.max(18 - length, 1);
+      const repeatMax = 52 - length + 1;
+      for (let len = repeatMin; len < repeatMax; len++) {
+        // 先頭のアスタリスクに呪文に使える文字を仮定してチェックする
+        const newPassword =
+          password.substring(0, position) + JUMON_ALPHABET.charAt(i).repeat(len) + password.substring(position + 1);
+        const info = analyzePassword(newPassword);
+        if (info && info.valid) {
+          passwords.push(newPassword);
+        }
+      }
+    }
+    return passwords;
+  }
 };
 
 /** 仲間の名前を取得する.
