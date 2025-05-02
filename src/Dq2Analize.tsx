@@ -18,6 +18,8 @@ const Dq2Edit: React.FC<Props> = (props) => {
 
   const [validLength, setValidLength] = useState<boolean>(true);
   const [validHatena, setValidHatena] = useState<boolean>(true);
+  const [validAstarisk, setValidAstarisk] = useState<boolean>(true);
+  const [validCombination, setValidCombination] = useState<boolean>(true);
   const [emptyPasswords, setEmptyPasswords] = useState<boolean>(true);
   const [invalidChars, setInvalidChars] = useState<string>('');
 
@@ -26,27 +28,46 @@ const Dq2Edit: React.FC<Props> = (props) => {
     // フラグをクリア
     setValidLength(true);
     setValidHatena(true);
+    setValidAstarisk(true);
+    setValidCombination(true);
 
     setInvalidChars(dq2.invalidCharsInPassword(password));
 
     // 呪文を正規化
     const normalize = dq2.toNormalizePassword(password);
-    if (normalize.length < 18 || 52 < normalize.length) {
-      // 復活の呪文の長さが違う
-      setValidLength(false);
-      return false;
-    }
+    // ハテナの数
+    const countHatena = dq2.countHatena(normalize);
+    // アスタリスクの数
+    const countAstarisk = dq2.countAstarisk(normalize);
 
     // 結果
     let valid = true;
-    const count = dq2.countHatena(normalize);
-    if (3 < count) {
+    if (3 < countHatena) {
       // ハテナが３個超過
       setValidHatena(false);
       valid = false;
     }
-    // 「？」なしなら、エラーが出ても解析OK
-    return count === 0 ? true : valid;
+    if (1 < countAstarisk) {
+      // アスタリスクが１個超過
+      setValidAstarisk(false);
+      valid = false;
+    }
+    if (countHatena !== 0 && countAstarisk !== 0) {
+      // ハテナとアスタリスクを同時指定
+      setValidCombination(false);
+      valid = false;
+    }
+    if (52 < normalize.length) {
+      // 復活の呪文の長さが上限越え
+      setValidLength(false);
+      valid = false;
+    }
+    if (normalize.length < 18 && countAstarisk === 0) {
+      // 復活の呪文の長さが下限未満（ただしアスタリスク指定時は除く）
+      setValidLength(false);
+      valid = false;
+    }
+    return valid;
   };
 
   const analyze = useCallback(async (password: string): Promise<void> => {
@@ -69,8 +90,16 @@ const Dq2Edit: React.FC<Props> = (props) => {
       const list = dq2.hatenaPassword(normalized);
       setPasswords(list);
       setEmptyPasswords(list.length === 0);
+    } else if (normalized.includes('＊')) {
+      // "＊" が含まれる場合には、一覧表示
+      setPasswords([]);
+      setEmptyPasswords(false);
+      setTargetPassword('');
+      const list = dq2.astariskPassword(normalized);
+      setPasswords(list);
+      setEmptyPasswords(list.length === 0);
     } else {
-      // "？" が含まれない場合は、詳細表示
+      // "？" / "＊" が含まれない場合は、詳細表示
       setPasswords([]);
       setEmptyPasswords(false);
       setTargetPassword(normalized);
@@ -89,6 +118,8 @@ const Dq2Edit: React.FC<Props> = (props) => {
       <br />
       {!validLength && <div>ひらがな18～52文字で指定してね</div>}
       {!validHatena && <div>「？」は３つまでにしてね</div>}
+      {!validAstarisk && <div>「＊」は１つだけにしてね</div>}
+      {!validCombination && <div>「？」と「＊」は同時に指定しないでね</div>}
       {emptyPasswords && <div>対象のふっかつのじゅもんがありません</div>}
       {invalidChars && <div>次の文字はつかえません「{invalidChars}」</div>}
     </div>
@@ -135,7 +166,11 @@ const Dq2Edit: React.FC<Props> = (props) => {
           onChange={(e) => setNowPassword(e.target.value)}
         />
       </div>
-      <div>※「？」は３つまで使えます。３つあると時間がかかります。</div>
+      <div>
+        「？」は３つまで使えます。３つあると時間がかかります。
+        <br />
+        「＊」は１つだけ使えます。「？」と「＊」は同時には指定できません。
+      </div>
 
       {errorMessage}
 
