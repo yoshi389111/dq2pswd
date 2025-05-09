@@ -461,7 +461,7 @@ export interface Dq2PasswordInfo {
 
   /** 暗号化のキー(0-7) */
   cryptKey: number;
-  /** チェックコード */
+  /** チェックコード(11bit) */
   checkCode: number;
   /** 解析成功の場合に真 */
   valid: boolean;
@@ -745,7 +745,7 @@ export const analyzePassword = (password: string): Dq2PasswordInfo | undefined =
   // チェックコード(CRC)を計算する. 0 なら正常
   bytes.code[0] &= ~0xf8;
   bytes.code[8] &= ~0x3f;
-  const checkCode = crc - calcuteCrc(bytes);
+  const checkCode = (crc - calcuteCrc(bytes)) & 0x7ff;
 
   if (bytes.len === 39) {
     bytes.code[39] = bytes.code[8] & 0xc0;
