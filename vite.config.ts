@@ -6,9 +6,6 @@ import react from '@vitejs/plugin-react-swc';
 export default defineConfig({
   plugins: [react()],
   base: '/dq2pswd/',
-  test: {
-    globals: true,
-  },
   build: {
     outDir: 'docs',
   },
